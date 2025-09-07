@@ -1,11 +1,15 @@
 ﻿using StarlightRotation;
 using System;
+using System.CodeDom.Compiler;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Configuration;
+using System.Diagnostics;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Input;
 using System.Windows.Threading;
 
 namespace StarlightRotationWpf
@@ -15,16 +19,24 @@ namespace StarlightRotationWpf
         // --- 私有字段 ---
         private StarlightDeviceApi device0105 = new StarlightDeviceApi();
         private StarlightDeviceApi device1266 = new StarlightDeviceApi();
+        private int wheelhandle = 0;
         private DispatcherTimer _timer;
 
         private string _device1SerialNumber = "Connecting...";
         private string _device2SerialNumber = "Connecting...";
         private string _device1ReadingValue = "N/A";
         private string _device2ReadingValue = "N/A";
-        private double _light1Currency = 0;
-        private double _light2Currency = 0;
+        private int _light1CurrencyMilliAmpere = 0;
+        private int _light2CurrencyMilliAmpere = 0;
+
+        public ICommand ZeroDetector1Command { get; private set; }
+        public ICommand ZeroDetector2Command { get; private set; }
+
+        public ICommand FilterWheelRotateCommand { get; private set; }
 
         // --- 公开属性 (供View绑定) ---
+
+
 
         public string Device1SerialNumber
         {
@@ -66,31 +78,31 @@ namespace StarlightRotationWpf
             }
         }
 
-        public double Light1Currency
+        public int Light1CurrencyMilliAmpere
         {
-            get => _light1Currency;
+            get => _light1CurrencyMilliAmpere;
             set {
-                if (value > 1)
-                    value = 1;
+                if (value > 1000)
+                    value = 1000;
                 if (value < 0)
                     value = 0;
-                device1266.SetLightSourceCurrent(1, value);
-                _light1Currency = value;
+                device1266.SetLightSourceCurrent(1, value / 1000.0);
+                _light1CurrencyMilliAmpere = value;
                 OnPropertyChanged();
             }
         }
 
-        public double Light2Currency
+        public int Light2CurrencyMilliAmpere
         {
-            get => _light2Currency;
+            get => _light2CurrencyMilliAmpere;
             set
             {
-                if (value > 1)
-                    value = 1;
+                if (value > 1000)
+                    value = 1000;
                 if (value < 0)
                     value = 0;
-                device1266.SetLightSourceCurrent(2, value);
-                _light2Currency = value;
+                device1266.SetLightSourceCurrent(2, value / 1000.0);
+                _light2CurrencyMilliAmpere = value;
                 OnPropertyChanged();
             }
         }
@@ -103,11 +115,57 @@ namespace StarlightRotationWpf
         {
             InitializeDevices();
 
+            Trace.WriteLine("Preparing Wheel....");
+            wheelhandle = FilterWheelApi.InitializeDeviceAndGetHandle("COM6");
+
             // 使用DispatcherTimer，它能确保Tick事件在UI线程上执行，避免跨线程问题
             _timer = new DispatcherTimer();
             _timer.Interval = TimeSpan.FromMilliseconds(500);
             _timer.Tick += OnTimerTick;
             _timer.Start();
+
+
+            ZeroDetector1Command = new AsyncRelayCommand<Object>(
+                execute: (Object) => Task.Run(() =>
+                {
+                    try
+                    {
+                        device0105.ZeroDetector();
+                    }
+                    catch (Exception _)
+                    {
+                        {
+                            Trace.WriteLine("ZeroDetector1 ERROR!");
+                        }
+                    }
+                }),
+                canExecute: (_) => device0105.IsConnected // 只有在设备连接时，按钮才可用
+                );
+            ZeroDetector2Command = new AsyncRelayCommand<Object>(
+                execute: (_) => Task.Run(() => {
+                    try
+                    {
+                        device1266.ZeroDetector();
+                    }
+                    catch(Exception _) {
+                    {
+                        Trace.WriteLine("ZeroDetector1 ERROR!");
+                    }
+                }}),
+                canExecute: (_) => device1266.IsConnected // 只有在设备连接时，按钮才可用
+                );
+            FilterWheelRotateCommand = new AsyncRelayCommand<string>(
+                execute: (s) => Task.Run(() => {
+                    var result = FilterWheelApi.SetPosition(wheelhandle, int.Parse(s));
+                    if(result != 0)
+                    {
+                        Trace.WriteLine(FilterWheelApi.GetErrorMessage(result));
+                    }
+                }),
+                canExecute: (_) =>
+                {
+                    return true;
+                });
         }
 
 
@@ -129,7 +187,7 @@ namespace StarlightRotationWpf
             {
                 Device1SerialNumber = "Error!";
                 Device2SerialNumber = "Error!";
-                Console.WriteLine("无法连接到星光模拟器！");
+                Trace.WriteLine("无法连接到星光模拟器！");
                 return;
             }
 
@@ -156,8 +214,8 @@ namespace StarlightRotationWpf
                 var d2Read = device1266.ReadDetectorValue();
 
                 // 更新属性，而不是直接操作UI控件
-                Device1Reading = $"Value: {d1Read.Value:F4}, Gain: {d1Read.Gain}";
-                Device2Reading = $"Value: {d2Read.Value:F4}, Gain: {d2Read.Gain}";
+                Device1Reading = $"{d1Read.Value}";
+                Device2Reading = $"{d2Read.Value}";
             }
         }
 
@@ -168,6 +226,68 @@ namespace StarlightRotationWpf
         protected void OnPropertyChanged([CallerMemberName] string propertyName = null)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
+    }
+}
+
+public class RelayCommand : ICommand
+{
+    private readonly Action _execute;
+    private readonly Func<bool> _canExecute;
+
+    public event EventHandler CanExecuteChanged
+    {
+        add { CommandManager.RequerySuggested += value; }
+        remove { CommandManager.RequerySuggested -= value; }
+    }
+
+    public RelayCommand(Action execute, Func<bool> canExecute = null)
+    {
+        _execute = execute ?? throw new ArgumentNullException(nameof(execute));
+        _canExecute = canExecute;
+    }
+
+    public bool CanExecute(object parameter) => _canExecute == null || _canExecute();
+
+    public void Execute(object parameter) => _execute();
+}
+
+public class AsyncRelayCommand<T> : ICommand
+{
+    private readonly Func<T, Task> _execute;
+    private readonly Func<T, bool> _canExecute;
+    private bool _isExecuting;
+
+    public event EventHandler CanExecuteChanged
+    {
+        add { CommandManager.RequerySuggested += value; }
+        remove { CommandManager.RequerySuggested -= value; }
+    }
+
+    public AsyncRelayCommand(Func<T, Task> execute, Func<T, bool> canExecute = null)
+    {
+        _execute = execute ?? throw new ArgumentNullException(nameof(execute));
+        _canExecute = canExecute;
+    }
+
+    public bool CanExecute(object parameter)
+    {
+        // 尝试将参数转换为泛型类型 T
+        //return !_isExecuting && (_canExecute == null || _canExecute((T)parameter));
+        return _canExecute((T)parameter);
+    }
+
+    public async void Execute(object parameter)
+    {
+        _isExecuting = true;
+        try
+        {
+            // 尝试将参数转换为泛型类型 T
+            await _execute((T)parameter);
+        }
+        finally
+        {
+            _isExecuting = false;
         }
     }
 }

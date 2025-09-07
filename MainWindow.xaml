@@ -12,48 +12,79 @@
         <local:MainViewModel/>
     </Window.DataContext>
 
-    <Grid Margin="15,15,342,33">
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="20"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-            <!-- Spacing -->
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-        </Grid.RowDefinitions>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="Auto"/>
-            <ColumnDefinition Width="*"/>
-        </Grid.ColumnDefinitions>
+    <StackPanel Orientation="Horizontal">
+        <GroupBox Header="Starlight Control" Width="314" Margin="10,0,0,0">
+            <Grid Margin="15,15,-2,33">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="20"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <!-- Spacing -->
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
 
-        <!-- Device 1 Info -->
-        <TextBlock Grid.Row="0" Grid.Column="0" Text="Device 1 Serial Number:" FontWeight="Bold" Margin="0,0,10,5"/>
-        <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding Device1SerialNumber}" />
+                <!-- Device 1 Info -->
+                <TextBlock Grid.Row="0" Grid.Column="0" Text="Device 1 Serial Number:" FontWeight="Bold" Margin="0,0,10,5"/>
+                <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding Device1SerialNumber}" />
 
-        <!-- Device 2 Info -->
-        <TextBlock Grid.Row="1" Grid.Column="0" Text="Device 2 Serial Number:" FontWeight="Bold" Margin="0,0,10,5"/>
-        <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding Device2SerialNumber}" />
+                <!-- Device 2 Info -->
+                <TextBlock Grid.Row="1" Grid.Column="0" Text="Device 2 Serial Number:" FontWeight="Bold" Margin="0,0,10,5"/>
+                <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding Device2SerialNumber}" />
 
-        <TextBlock Grid.Row="3" Grid.Column="0" Text="Device 1 Reading:" FontWeight="Bold" Margin="0,0,10,5"/>
-        <TextBlock Grid.Row="3" Grid.Column="1" Text="{Binding Device1Reading}" />
+                <TextBlock Grid.Row="3" Grid.Column="0" Text="Device 1 Lux:" FontWeight="Bold" Margin="0,0,10,5"/>
+                <TextBlock Grid.Row="3" Grid.Column="1" Text="{Binding Device1Reading}" />
 
 
-        <TextBlock Grid.Row="4" Grid.Column="0" Text="Device 2 Reading:" FontWeight="Bold" Margin="0,0,10,5"/>
-        <TextBlock Grid.Row="4" Grid.Column="1" Text="{Binding Device2Reading}" />
+                <TextBlock Grid.Row="4" Grid.Column="0" Text="Device 2 Lux:" FontWeight="Bold" Margin="0,0,10,5"/>
+                <TextBlock Grid.Row="4" Grid.Column="1" Text="{Binding Device2Reading}" />
 
-        <TextBlock Grid.Row="6" Grid.Column="0" Grid.ColumnSpan="1" Text="Light1 Currency:" FontWeight="Bold" Margin="0,0,10,5"/>
-        <TextBox Grid.Row="6" Grid.Column="1" Text="{Binding Light1Currency}"/>
-        <Slider HorizontalAlignment="Left" Margin="10,0,0,0" Grid.Row="7" Grid.ColumnSpan="2" VerticalAlignment="Center" Minimum="0" Maximum="1" Value="{Binding Light1Currency}"/>
+                <TextBlock Grid.Row="6" Grid.Column="0" Grid.ColumnSpan="1" Text="Light1 Currency(mA):" FontWeight="Bold" Margin="0,0,10,5"/>
+                <TextBox Grid.Row="6" Grid.Column="1" Text="{Binding Light1CurrencyMilliAmpere}"/>
+                <Slider Grid.Row="7" Grid.ColumnSpan="2"  Minimum="0" Maximum="1000" Value="{Binding Light1CurrencyMilliAmpere}"/>
 
-        <TextBlock Grid.Row="8" Grid.Column="0" Grid.ColumnSpan="1" Text="Light2 Currency:" FontWeight="Bold" Margin="0,0,10,5" />
-        <TextBox Grid.Row="8" Grid.Column="1" Text="{Binding Light2Currency}"/>
-        <Slider HorizontalAlignment="Left" Margin="10,0,0,0" Grid.Row="9" Grid.ColumnSpan="2" VerticalAlignment="Center" Minimum="0" Maximum="1" Value="{Binding Light2Currency}"/>
-    </Grid>
+                <TextBlock Grid.Row="8" Grid.Column="0" Grid.ColumnSpan="1" Text="Light2 Currency(mA):" FontWeight="Bold" Margin="0,0,10,5" />
+                <TextBox Grid.Row="8" Grid.Column="1" Text="{Binding Light2CurrencyMilliAmpere}"/>
+                <Slider Grid.Row="9" Grid.ColumnSpan="2" Minimum="0" Maximum="1000" Value="{Binding Light2CurrencyMilliAmpere}"/>
+                <Button x:Name="buttonZeroDetector1" Content="Zero Detector-1" Grid.Row="11" Grid.ColumnSpan="2" Margin="0,10,0,0" Width="291" Command="{Binding ZeroDetector1Command}"/>
+                <Button x:Name="buttonZeroDetector2" Content="Zero Detector-2" Grid.Row="12" Grid.ColumnSpan="2" Margin="0,10,0,0" Width="291" Command="{Binding ZeroDetector2Command}"/>
+            </Grid>
+        </GroupBox>
+        <GroupBox Header="Filter Wheel Control" Margin="10,0,0,0">
+            <Grid HorizontalAlignment="Center" Height="266" Margin="2,0,0,0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+                <Button Grid.Row="0" Content="0.014mm" Command="{Binding FilterWheelRotateCommand}" CommandParameter="1"  Margin="0,0,0,10"/>
+                <Button Grid.Row="1" Content="0.035mm" Command="{Binding FilterWheelRotateCommand}" CommandParameter="2"  Margin="0,0,0,10"/>
+                <Button Grid.Row="2" Content="0.056mm" Command="{Binding FilterWheelRotateCommand}" CommandParameter="3"  Margin="0,0,0,10"/>
+                <Button Grid.Row="3" Content="0.084mm" Command="{Binding FilterWheelRotateCommand}" CommandParameter="4"  Margin="0,0,0,10"/>
+                <Button Grid.Row="4" Content="0.110mm" Command="{Binding FilterWheelRotateCommand}" CommandParameter="5"  Margin="0,0,0,10"/>
+                <Button Grid.Row="5" Content="0.140mm" Command="{Binding FilterWheelRotateCommand}" CommandParameter="6"  Margin="0,0,0,10"/>
+            </Grid>
+        </GroupBox>
+    </StackPanel>
 </Window>

@@ -100,6 +100,7 @@ namespace StarlightRotation
     class StarlightDeviceApi
     {
         private readonly LFDCQuadChannel _device;
+       
 
         /// <summary>
         /// 获取当前连接设备的序列号。如果未连接，则返回 "未连接"。
