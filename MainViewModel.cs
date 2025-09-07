@@ -19,8 +19,10 @@ namespace StarlightRotationWpf
 
         private string _device1SerialNumber = "Connecting...";
         private string _device2SerialNumber = "Connecting...";
-        private string _device1Reading = "N/A";
-        private string _device2Reading = "N/A";
+        private string _device1ReadingValue = "N/A";
+        private string _device2ReadingValue = "N/A";
+        private double _light1Currency = 0;
+        private double _light2Currency = 0;
 
         // --- 公开属性 (供View绑定) ---
 
@@ -46,23 +48,54 @@ namespace StarlightRotationWpf
 
         public string Device1Reading
         {
-            get => _device1Reading;
+            get => _device1ReadingValue;
             set
             {
-                _device1Reading = value;
+                _device1ReadingValue = value;
                 OnPropertyChanged();
             }
         }
 
         public string Device2Reading
         {
-            get => _device2Reading;
+            get => _device2ReadingValue;
             set
             {
-                _device2Reading = value;
+                _device2ReadingValue = value;
                 OnPropertyChanged();
             }
         }
+
+        public double Light1Currency
+        {
+            get => _light1Currency;
+            set {
+                if (value > 1)
+                    value = 1;
+                if (value < 0)
+                    value = 0;
+                device1266.SetLightSourceCurrent(1, value);
+                _light1Currency = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public double Light2Currency
+        {
+            get => _light2Currency;
+            set
+            {
+                if (value > 1)
+                    value = 1;
+                if (value < 0)
+                    value = 0;
+                device1266.SetLightSourceCurrent(2, value);
+                _light2Currency = value;
+                OnPropertyChanged();
+            }
+        }
+
+
 
 
         // --- 构造函数 (初始化逻辑) ---

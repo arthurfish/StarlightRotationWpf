@@ -5,20 +5,26 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:StarlightRotationWpf"
         mc:Ignorable="d"
-        Title="Starlight Instrument Control" Height="250" Width="400">
+        Title="Starlight Instrument Control" Height="358" Width="648">
 
     <!-- 1. 设置窗口的DataContext（数据上下文）为我们的ViewModel -->
     <Window.DataContext>
         <local:MainViewModel/>
     </Window.DataContext>
 
-    <Grid Margin="15">
+    <Grid Margin="15,15,342,33">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
             <RowDefinition Height="20"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
             <!-- Spacing -->
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
@@ -31,15 +37,23 @@
         <TextBlock Grid.Row="0" Grid.Column="0" Text="Device 1 Serial Number:" FontWeight="Bold" Margin="0,0,10,5"/>
         <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding Device1SerialNumber}" />
 
-        <TextBlock Grid.Row="1" Grid.Column="0" Text="Device 1 Reading:" FontWeight="Bold" Margin="0,0,10,5"/>
-        <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding Device1Reading}" />
-
         <!-- Device 2 Info -->
-        <TextBlock Grid.Row="3" Grid.Column="0" Text="Device 2 Serial Number:" FontWeight="Bold" Margin="0,0,10,5"/>
-        <TextBlock Grid.Row="3" Grid.Column="1" Text="{Binding Device2SerialNumber}" />
+        <TextBlock Grid.Row="1" Grid.Column="0" Text="Device 2 Serial Number:" FontWeight="Bold" Margin="0,0,10,5"/>
+        <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding Device2SerialNumber}" />
+
+        <TextBlock Grid.Row="3" Grid.Column="0" Text="Device 1 Reading:" FontWeight="Bold" Margin="0,0,10,5"/>
+        <TextBlock Grid.Row="3" Grid.Column="1" Text="{Binding Device1Reading}" />
+
 
         <TextBlock Grid.Row="4" Grid.Column="0" Text="Device 2 Reading:" FontWeight="Bold" Margin="0,0,10,5"/>
         <TextBlock Grid.Row="4" Grid.Column="1" Text="{Binding Device2Reading}" />
 
+        <TextBlock Grid.Row="6" Grid.Column="0" Grid.ColumnSpan="1" Text="Light1 Currency:" FontWeight="Bold" Margin="0,0,10,5"/>
+        <TextBox Grid.Row="6" Grid.Column="1" Text="{Binding Light1Currency}"/>
+        <Slider HorizontalAlignment="Left" Margin="10,0,0,0" Grid.Row="7" Grid.ColumnSpan="2" VerticalAlignment="Center" Minimum="0" Maximum="1" Value="{Binding Light1Currency}"/>
+
+        <TextBlock Grid.Row="8" Grid.Column="0" Grid.ColumnSpan="1" Text="Light2 Currency:" FontWeight="Bold" Margin="0,0,10,5" />
+        <TextBox Grid.Row="8" Grid.Column="1" Text="{Binding Light2Currency}"/>
+        <Slider HorizontalAlignment="Left" Margin="10,0,0,0" Grid.Row="9" Grid.ColumnSpan="2" VerticalAlignment="Center" Minimum="0" Maximum="1" Value="{Binding Light2Currency}"/>
     </Grid>
 </Window>
