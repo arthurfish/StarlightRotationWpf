@@ -1,0 +1,45 @@
+﻿<Window x:Class="StarlightRotationWpf.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:StarlightRotationWpf"
+        mc:Ignorable="d"
+        Title="Starlight Instrument Control" Height="250" Width="400">
+
+    <!-- 1. 设置窗口的DataContext（数据上下文）为我们的ViewModel -->
+    <Window.DataContext>
+        <local:MainViewModel/>
+    </Window.DataContext>
+
+    <Grid Margin="15">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="20"/>
+            <!-- Spacing -->
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+
+        <!-- Device 1 Info -->
+        <TextBlock Grid.Row="0" Grid.Column="0" Text="Device 1 Serial Number:" FontWeight="Bold" Margin="0,0,10,5"/>
+        <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding Device1SerialNumber}" />
+
+        <TextBlock Grid.Row="1" Grid.Column="0" Text="Device 1 Reading:" FontWeight="Bold" Margin="0,0,10,5"/>
+        <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding Device1Reading}" />
+
+        <!-- Device 2 Info -->
+        <TextBlock Grid.Row="3" Grid.Column="0" Text="Device 2 Serial Number:" FontWeight="Bold" Margin="0,0,10,5"/>
+        <TextBlock Grid.Row="3" Grid.Column="1" Text="{Binding Device2SerialNumber}" />
+
+        <TextBlock Grid.Row="4" Grid.Column="0" Text="Device 2 Reading:" FontWeight="Bold" Margin="0,0,10,5"/>
+        <TextBlock Grid.Row="4" Grid.Column="1" Text="{Binding Device2Reading}" />
+
+    </Grid>
+</Window>
