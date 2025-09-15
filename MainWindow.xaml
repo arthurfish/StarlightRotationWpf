@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:StarlightRotationWpf"
         mc:Ignorable="d"
-        Title="Starlight Instrument Control" Height="358" Width="648">
+        Title="Starlight Instrument Control" Height="428" Width="648">
 
     <!-- 1. 设置窗口的DataContext（数据上下文）为我们的ViewModel -->
     <Window.DataContext>
@@ -13,7 +13,7 @@
     </Window.DataContext>
 
     <StackPanel Orientation="Horizontal">
-        <GroupBox Header="Starlight Control" Width="314" Margin="10,0,0,0">
+        <GroupBox Header="Starlight Control" Width="314" Margin="10,0,0,0" Height="333">
             <Grid Margin="15,15,-2,33">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/>
@@ -65,26 +65,59 @@
                 <Button x:Name="buttonZeroDetector2" Content="Zero Detector-2" Grid.Row="12" Grid.ColumnSpan="2" Margin="0,10,0,0" Width="291" Command="{Binding ZeroDetector2Command}"/>
             </Grid>
         </GroupBox>
-        <GroupBox Header="Filter Wheel Control" Margin="10,0,0,0">
-            <Grid HorizontalAlignment="Center" Height="266" Margin="2,0,0,0">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto"/>
-                </Grid.ColumnDefinitions>
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="Auto"/>
-                </Grid.RowDefinitions>
-                <Button Grid.Row="0" Content="0.014mm" Command="{Binding FilterWheelRotateCommand}" CommandParameter="1"  Margin="0,0,0,10"/>
-                <Button Grid.Row="1" Content="0.035mm" Command="{Binding FilterWheelRotateCommand}" CommandParameter="2"  Margin="0,0,0,10"/>
-                <Button Grid.Row="2" Content="0.056mm" Command="{Binding FilterWheelRotateCommand}" CommandParameter="3"  Margin="0,0,0,10"/>
-                <Button Grid.Row="3" Content="0.084mm" Command="{Binding FilterWheelRotateCommand}" CommandParameter="4"  Margin="0,0,0,10"/>
-                <Button Grid.Row="4" Content="0.110mm" Command="{Binding FilterWheelRotateCommand}" CommandParameter="5"  Margin="0,0,0,10"/>
-                <Button Grid.Row="5" Content="0.140mm" Command="{Binding FilterWheelRotateCommand}" CommandParameter="6"  Margin="0,0,0,10"/>
-            </Grid>
-        </GroupBox>
+        <StackPanel>
+            <GroupBox Header="Filter Wheel Control" Margin="10,0,0,0" Width="281">
+                <Grid HorizontalAlignment="Center" Height="266" Margin="2,0,0,0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+                    <Button Grid.Row="0" Content="0.014mm" Command="{Binding FilterWheelRotateCommand}" CommandParameter="1"  Margin="0,0,0,10"/>
+                    <Button Grid.Row="1" Content="0.035mm" Command="{Binding FilterWheelRotateCommand}" CommandParameter="2"  Margin="0,0,0,10"/>
+                    <Button Grid.Row="2" Content="0.056mm" Command="{Binding FilterWheelRotateCommand}" CommandParameter="3"  Margin="0,0,0,10"/>
+                    <Button Grid.Row="3" Content="0.084mm" Command="{Binding FilterWheelRotateCommand}" CommandParameter="4"  Margin="0,0,0,10"/>
+                    <Button Grid.Row="4" Content="0.110mm" Command="{Binding FilterWheelRotateCommand}" CommandParameter="5"  Margin="0,0,0,10"/>
+                    <Button Grid.Row="5" Content="0.140mm" Command="{Binding FilterWheelRotateCommand}" CommandParameter="6"  Margin="0,0,0,10"/>
+                </Grid>
+            </GroupBox>
+            <GroupBox Header="Dual Axis Control">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+                    <TextBlock Grid.Row="0" Grid.Column="1" Text="Horizen"/>
+                    <TextBlock Grid.Row="0" Grid.Column="2" Text="Vertical"/>
+                    <TextBlock Grid.Row="1" Grid.Column="0" Text="Angle(Deg)"/>
+                    <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding HorizentalAngleInDegree}"/>
+                    <TextBox Grid.Row="1" Grid.Column="2" Text="{Binding VerticalAngleInDegree}"/>
+                    <TextBlock Grid.Row="2" Grid.Column="0" Text="Step(Deg)"/>
+                    <TextBox Grid.Row="2" Grid.Column="1" Text="{Binding HorizentalStepSizeInDegree}"/>
+                    <TextBox Grid.Row="2" Grid.Column="2" Text="{Binding VerticalStepSizeInDegree}"/>
+                    <TextBlock Grid.Row="3" Grid.Column="0" Text="Step Forward"/>
+                    <Button Grid.Row="3" Grid.Column="1" Content="+"/>
+                    <Button Grid.Row="3" Grid.Column="2" Content="+"/>
+                    <TextBlock Grid.Row="4" Grid.Column="0" Text="Step Backward"/>
+                    <Button Grid.Row="4" Grid.Column="1" Content="-"/>
+                    <Button Grid.Row="4" Grid.Column="2" Content="-"/>
+                </Grid>
+
+            </GroupBox>
+        </StackPanel>
     </StackPanel>
 </Window>

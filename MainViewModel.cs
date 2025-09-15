@@ -19,6 +19,7 @@ namespace StarlightRotationWpf
         // --- 私有字段 ---
         private StarlightDeviceApi device0105 = new StarlightDeviceApi();
         private StarlightDeviceApi device1266 = new StarlightDeviceApi();
+        private DualAxisRotationDeviceApi dualAxisRotationDeviceApi = new DualAxisRotationDeviceApi();
         private int wheelhandle = 0;
         private DispatcherTimer _timer;
 
@@ -28,6 +29,12 @@ namespace StarlightRotationWpf
         private string _device2ReadingValue = "N/A";
         private int _light1CurrencyMilliAmpere = 0;
         private int _light2CurrencyMilliAmpere = 0;
+
+        private double _horizentalAngleInDegree = 0;
+        private double _verticalAngleInDegree = 0;
+
+        private double _horizentalStepSizeInDegree = 10;
+        private double _verticalStepSizeInDegree = 10;
 
         public ICommand ZeroDetector1Command { get; private set; }
         public ICommand ZeroDetector2Command { get; private set; }
@@ -107,7 +114,47 @@ namespace StarlightRotationWpf
             }
         }
 
+        public double HorizentalAngleInDegree
+        {
+            get => _horizentalAngleInDegree;
+            set
+            {
+                dualAxisRotationDeviceApi.setHorizentalRotationInDegree(value);
+                _horizentalAngleInDegree = value;
+                OnPropertyChanged();
+            }
+        }
 
+        public double VerticalAngleInDegree
+        {
+            get => _horizentalAngleInDegree;
+            set
+            {
+                dualAxisRotationDeviceApi.setVerticalRotationInDegree(value);
+                _verticalAngleInDegree = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public double HorizentalStepSizeInDegree
+        {
+            get => _horizentalStepSizeInDegree;
+            set
+            {
+                HorizentalStepSizeInDegree = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public double VerticalStepSizeInDegree
+        {
+            get => _verticalStepSizeInDegree;
+            set
+            {
+                VerticalStepSizeInDegree = value;
+                OnPropertyChanged();
+            }
+        }
 
 
         // --- 构造函数 (初始化逻辑) ---
