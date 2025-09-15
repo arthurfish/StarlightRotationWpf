@@ -18,6 +18,8 @@ namespace StarlightRotationWpf
         private ushort verticalAxis = 0;
         private double verticalEquiv = 10000 / 360.0 * 880;
         private double horizentalEquiv = 12800 / 360.0 * 180;
+        private double speed = 10;
+        public double Speed { get => speed; set => speed = value; }
 
         public DualAxisRotationDeviceApi(string ipAddress = "192.168.5.11")
         {
@@ -32,8 +34,8 @@ namespace StarlightRotationWpf
             LTSMC.smc_set_equiv(0, horizentalAxis, horizentalEquiv);
             LTSMC.smc_set_equiv(0, verticalAxis, verticalEquiv);
 
-            LTSMC.smc_set_profile_unit(0, horizentalAxis, 0, 10, 0, 0, 0);
-            LTSMC.smc_set_profile_unit(0, verticalAxis, 0, 10, 0, 0, 0);
+            LTSMC.smc_set_profile_unit(0, horizentalAxis, 0, speed, 0, 0, 0);
+            LTSMC.smc_set_profile_unit(0, verticalAxis, 0, speed, 0, 0, 0);
         }
 
         ~DualAxisRotationDeviceApi()
@@ -45,6 +47,7 @@ namespace StarlightRotationWpf
         {
             if (!isConnected)
                 return;
+            LTSMC.smc_set_profile_unit(0, horizentalAxis, 0, speed, 0, 0, 0);
             LTSMC.smc_pmove_unit(0, horizentalAxis, degree % 360, 1);
         }
 
@@ -52,6 +55,7 @@ namespace StarlightRotationWpf
         {
             if (!isConnected)
                 return;
+            LTSMC.smc_set_profile_unit(0, verticalAxis, 0, speed, 0, 0, 0);
             LTSMC.smc_pmove_unit(0, verticalAxis, degree % 360, 1);
         }
 
@@ -83,7 +87,8 @@ namespace StarlightRotationWpf
 
         public bool isAvaliable()
         {
-            return LTSMC.smc_check_done(0, horizentalAxis) == 1 && LTSMC.smc_check_done(0, verticalAxis) == 1;
+            //            return LTSMC.smc_check_done(0, horizentalAxis) == 0 && LTSMC.smc_check_done(0, verticalAxis) == 0;
+            return true;
         }
     }
 }

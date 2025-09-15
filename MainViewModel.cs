@@ -9,6 +9,7 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Controls.Primitives;
 using System.Windows.Input;
 using System.Windows.Threading;
 
@@ -37,6 +38,9 @@ namespace StarlightRotationWpf
         private double _verticalStepSizeInDegree = 10;
 
         private double _rotationSpeed = 10;
+
+        private double _gotHorizentalAngleInDegree = 0;
+        private double _gotVerticalAngleInDegree = 0;
 
         public ICommand ZeroDetector1Command { get; private set; }
         public ICommand ZeroDetector2Command { get; private set; }
@@ -138,7 +142,7 @@ namespace StarlightRotationWpf
 
         public double VerticalAngleInDegree
         {
-            get => _horizentalAngleInDegree;
+            get => _verticalAngleInDegree;
             set
             {
                 _verticalAngleInDegree = value;
@@ -168,12 +172,22 @@ namespace StarlightRotationWpf
 
         public double GotHorizontalAngleInDegree
         {
-            get => dualAxisRotationDeviceApi.getHorizentalRotationInDegree();
+            get => _gotHorizentalAngleInDegree;
+            set
+            {
+                _gotHorizentalAngleInDegree= value;
+                OnPropertyChanged();
+            }
         }
 
         public double GotVerticalAngleInDegree
         {
-            get => dualAxisRotationDeviceApi.getVerticalRotationInDegree();
+            get => _gotVerticalAngleInDegree;
+            set
+            {
+                _gotVerticalAngleInDegree= value;
+                OnPropertyChanged();
+            }
         }
 
         public double rotationSpeed
@@ -182,6 +196,7 @@ namespace StarlightRotationWpf
             set
             {
                 _rotationSpeed = value;
+                dualAxisRotationDeviceApi.Speed = value;
                 OnPropertyChanged();
             }
         }
@@ -195,10 +210,12 @@ namespace StarlightRotationWpf
 
             // 使用DispatcherTimer，它能确保Tick事件在UI线程上执行，避免跨线程问题
             _timer = new DispatcherTimer();
-            _timer.Interval = TimeSpan.FromMilliseconds(500);
+            _timer.Interval = TimeSpan.FromMilliseconds(300);
             _timer.Tick += OnTimerTick;
             _timer.Start();
 
+            _horizentalAngleInDegree = dualAxisRotationDeviceApi.getHorizentalRotationInDegree();
+            _verticalAngleInDegree = dualAxisRotationDeviceApi.getVerticalRotationInDegree();
 
             ZeroDetector1Command = new AsyncRelayCommand<Object>(
                 execute: (Object) => Task.Run(() =>
@@ -245,7 +262,7 @@ namespace StarlightRotationWpf
             DualAxisRotationGoHorizental = new AsyncRelayCommand<string>(
             execute: (s) => Task.Run(() =>
             {
-                dualAxisRotationDeviceApi.setHorizentalRotationInDegree(double.Parse(s));
+                dualAxisRotationDeviceApi.setHorizentalRotationInDegree(HorizentalAngleInDegree);
             }),
             canExecute: (_) =>
             {
@@ -255,7 +272,7 @@ namespace StarlightRotationWpf
             DualAxisRotationGoVertical= new AsyncRelayCommand<string>(
                 execute: (s) => Task.Run(() =>
                 {
-                    dualAxisRotationDeviceApi.setVerticalRotationInDegree(double.Parse(s));
+                    dualAxisRotationDeviceApi.setVerticalRotationInDegree(VerticalAngleInDegree);
                 }),
                 canExecute: (_) =>
                 {
@@ -368,6 +385,15 @@ namespace StarlightRotationWpf
                 Device1Reading = $"{d1Read.Value}";
                 Device2Reading = $"{d2Read.Value}";
 
+
+
+            }
+            if (dualAxisRotationDeviceApi.isConnected)
+            {
+                GotHorizontalAngleInDegree = dualAxisRotationDeviceApi.getHorizentalRotationInDegree();
+                GotVerticalAngleInDegree = dualAxisRotationDeviceApi.getVerticalRotationInDegree();
+                Trace.WriteLine($"Dual: Got H A:{GotHorizontalAngleInDegree}");
+                Trace.WriteLine($"Dual: Got V A:{GotVerticalAngleInDegree}");
             }
         }
 
