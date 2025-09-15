@@ -36,12 +36,24 @@ namespace StarlightRotationWpf
         private double _horizentalStepSizeInDegree = 10;
         private double _verticalStepSizeInDegree = 10;
 
+        private double _rotationSpeed = 10;
+
         public ICommand ZeroDetector1Command { get; private set; }
         public ICommand ZeroDetector2Command { get; private set; }
 
         public ICommand FilterWheelRotateCommand { get; private set; }
 
+        public ICommand DualAxisRotationGoHorizental { get; private set; }
+        public ICommand DualAxisRotationGoVertical { get; private set; }
+        public ICommand DualAxisRotationStop { get; private set; }
+        public ICommand DualAxisRotationHorizenAdd { get; private set; }
+        public ICommand DualAxisRotationHorizenMinus { get; private set; }
+        public ICommand DualAxisRotationVerticalAdd { get; private set; }
+        public ICommand DualAxisRotationVerticalMinus { get; private set; }
+
+
         // --- 公开属性 (供View绑定) ---
+
 
 
 
@@ -119,7 +131,6 @@ namespace StarlightRotationWpf
             get => _horizentalAngleInDegree;
             set
             {
-                dualAxisRotationDeviceApi.setHorizentalRotationInDegree(value);
                 _horizentalAngleInDegree = value;
                 OnPropertyChanged();
             }
@@ -130,7 +141,6 @@ namespace StarlightRotationWpf
             get => _horizentalAngleInDegree;
             set
             {
-                dualAxisRotationDeviceApi.setVerticalRotationInDegree(value);
                 _verticalAngleInDegree = value;
                 OnPropertyChanged();
             }
@@ -156,7 +166,25 @@ namespace StarlightRotationWpf
             }
         }
 
+        public double GotHorizontalAngleInDegree
+        {
+            get => dualAxisRotationDeviceApi.getHorizentalRotationInDegree();
+        }
 
+        public double GotVerticalAngleInDegree
+        {
+            get => dualAxisRotationDeviceApi.getVerticalRotationInDegree();
+        }
+
+        public double rotationSpeed
+        {
+            get => _rotationSpeed;
+            set
+            {
+                _rotationSpeed = value;
+                OnPropertyChanged();
+            }
+        }
         // --- 构造函数 (初始化逻辑) ---
         public MainViewModel()
         {
@@ -213,6 +241,82 @@ namespace StarlightRotationWpf
                 {
                     return true;
                 });
+
+            DualAxisRotationGoHorizental = new AsyncRelayCommand<string>(
+            execute: (s) => Task.Run(() =>
+            {
+                dualAxisRotationDeviceApi.setHorizentalRotationInDegree(double.Parse(s));
+            }),
+            canExecute: (_) =>
+            {
+                return dualAxisRotationDeviceApi.isAvaliable();
+            });
+
+            DualAxisRotationGoVertical= new AsyncRelayCommand<string>(
+                execute: (s) => Task.Run(() =>
+                {
+                    dualAxisRotationDeviceApi.setVerticalRotationInDegree(double.Parse(s));
+                }),
+                canExecute: (_) =>
+                {
+                    return dualAxisRotationDeviceApi.isAvaliable();
+                });
+
+            DualAxisRotationStop = new AsyncRelayCommand<string>(
+                execute: (s) => Task.Run(() =>
+                {
+                    dualAxisRotationDeviceApi.emergencyStop();
+                }),
+                canExecute: (_) =>
+                {
+                    return true;
+                });
+
+            DualAxisRotationHorizenAdd = new AsyncRelayCommand<string>(
+                execute: (s) => Task.Run(() =>
+                {
+                    HorizentalAngleInDegree += HorizentalStepSizeInDegree;
+                    dualAxisRotationDeviceApi.setHorizentalRotationInDegree(HorizentalAngleInDegree);
+                }),
+                canExecute: (_) =>
+                {
+                    return dualAxisRotationDeviceApi.isAvaliable();
+                });
+
+
+            DualAxisRotationHorizenMinus = new AsyncRelayCommand<string>(
+                execute: (s) => Task.Run(() =>
+                {
+                    HorizentalAngleInDegree -= HorizentalStepSizeInDegree;
+                    dualAxisRotationDeviceApi.setHorizentalRotationInDegree(HorizentalAngleInDegree);
+                }),
+                canExecute: (_) =>
+                {
+                    return dualAxisRotationDeviceApi.isAvaliable();
+                });
+
+            DualAxisRotationVerticalAdd = new AsyncRelayCommand<string>(
+                execute: (s) => Task.Run(() =>
+                {
+                    VerticalAngleInDegree += VerticalStepSizeInDegree;
+                    dualAxisRotationDeviceApi.setVerticalRotationInDegree(VerticalAngleInDegree);
+                }),
+                canExecute: (_) =>
+                {
+                    return dualAxisRotationDeviceApi.isAvaliable();
+                });
+
+            DualAxisRotationVerticalMinus = new AsyncRelayCommand<Object>(
+    execute: (obj) => Task.Run(() =>
+    {
+        VerticalAngleInDegree -= VerticalStepSizeInDegree;
+        dualAxisRotationDeviceApi.setVerticalRotationInDegree(VerticalAngleInDegree);
+    }),
+    canExecute: (_) =>
+    {
+        return dualAxisRotationDeviceApi.isAvaliable();
+    });
+
         }
 
 
@@ -263,6 +367,7 @@ namespace StarlightRotationWpf
                 // 更新属性，而不是直接操作UI控件
                 Device1Reading = $"{d1Read.Value}";
                 Device2Reading = $"{d2Read.Value}";
+
             }
         }
 

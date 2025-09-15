@@ -57,6 +57,8 @@ namespace StarlightRotationWpf
 
         public double getHorizentalRotationInDegree()
         {
+            if (!isConnected)
+                return 0;
             double pos = 0;
             LTSMC.smc_get_position_unit(0, horizentalAxis, ref pos);
             return pos;
@@ -64,9 +66,24 @@ namespace StarlightRotationWpf
 
         public double getVerticalRotationInDegree()
         {
+            if (!isConnected)
+                return 0;
             double pos = 0;
             LTSMC.smc_get_position_unit(0, verticalAxis, ref pos);
             return pos;
+        }
+
+        public void emergencyStop()
+        {
+            if (!isConnected)
+                return;
+            LTSMC.smc_stop(0, verticalAxis, 0);
+            LTSMC.smc_stop(0, horizentalAxis, 0);
+        }
+
+        public bool isAvaliable()
+        {
+            return LTSMC.smc_check_done(0, horizentalAxis) == 1 && LTSMC.smc_check_done(0, verticalAxis) == 1;
         }
     }
 }

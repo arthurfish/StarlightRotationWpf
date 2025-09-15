@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:StarlightRotationWpf"
         mc:Ignorable="d"
-        Title="Starlight Instrument Control" Height="428" Width="648">
+        Title="Starlight Instrument Control" Height="462" Width="648">
 
     <!-- 1. 设置窗口的DataContext（数据上下文）为我们的ViewModel -->
     <Window.DataContext>
@@ -93,6 +93,7 @@
                         <ColumnDefinition Width="Auto"/>
                         <ColumnDefinition Width="Auto"/>
                         <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="Auto"/>
                     </Grid.ColumnDefinitions>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto"/>
@@ -100,21 +101,35 @@
                         <RowDefinition Height="Auto"/>
                         <RowDefinition Height="Auto"/>
                         <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
                     </Grid.RowDefinitions>
-                    <TextBlock Grid.Row="0" Grid.Column="1" Text="Horizen"/>
-                    <TextBlock Grid.Row="0" Grid.Column="2" Text="Vertical"/>
-                    <TextBlock Grid.Row="1" Grid.Column="0" Text="Angle(Deg)"/>
+
+                    <TextBlock Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" Text="Speed"/>
+                    <TextBox Grid.Row="0" Grid.Column="2" Grid.ColumnSpan="2" Text="{Binding rotationSpeed}"/>
+                    
+                    <TextBlock Grid.Row="1" Grid.Column="0" Text="Horizental"/>
                     <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding HorizentalAngleInDegree}"/>
-                    <TextBox Grid.Row="1" Grid.Column="2" Text="{Binding VerticalAngleInDegree}"/>
-                    <TextBlock Grid.Row="2" Grid.Column="0" Text="Step(Deg)"/>
-                    <TextBox Grid.Row="2" Grid.Column="1" Text="{Binding HorizentalStepSizeInDegree}"/>
-                    <TextBox Grid.Row="2" Grid.Column="2" Text="{Binding VerticalStepSizeInDegree}"/>
-                    <TextBlock Grid.Row="3" Grid.Column="0" Text="Step Forward"/>
-                    <Button Grid.Row="3" Grid.Column="1" Content="+"/>
-                    <Button Grid.Row="3" Grid.Column="2" Content="+"/>
-                    <TextBlock Grid.Row="4" Grid.Column="0" Text="Step Backward"/>
-                    <Button Grid.Row="4" Grid.Column="1" Content="-"/>
-                    <Button Grid.Row="4" Grid.Column="2" Content="-"/>
+                    <Button Grid.Row="1" Grid.Column="2" Content="Go!" Command="{Binding DualAxisRotationGoHorizental}"/>
+                    <TextBlock Grid.Row="1" Grid.Column="3" Text="{Binding GotHorizontalAngleInDegree}"/>
+
+                    <TextBlock Grid.Row="2" Grid.Column="0" Text="Vertical"/>
+                    <TextBox Grid.Row="2" Grid.Column="1" Text="{Binding VerticalAngleInDegree}"/>
+                    <Button Grid.Row="2" Grid.Column="2" Content="Go!" Command="{Binding DualAxisRotationGoVertical}"/>
+                    <TextBlock Grid.Row="2" Grid.Column="3" Text="{Binding GotVerticalAngleInDegree}"/>
+
+                    <Button Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="4" Content="STOP" Command="{Binding DualAxisRotationStop}"/>
+
+                    <TextBlock Grid.Row="5" Grid.Column="0" Text="H Step Size"/>
+                    <TextBox Grid.Row="5" Grid.Column="1" Text="{Binding HorizentalStepSizeInDegree}"/>
+                    <Button Grid.Row="5" Grid.Column="2" Content="H+" Command="{Binding DualAxisRotationHorizenAdd}"/>
+                    <Button Grid.Row="5" Grid.Column="3" Content="H-" Command="{Binding DualAxisRotationHorizenMinus}"/>
+
+                    <TextBlock Grid.Row="6" Grid.Column="0" Text="V Step Size"/>
+                    <TextBox Grid.Row="6" Grid.Column="1" Text="{Binding VerticalStepSizeInDegree}"/>
+                    <Button Grid.Row="6" Grid.Column="2" Content="V+" Command="{Binding DualAxisRotationVerticalAdd}"/>
+                    <Button Grid.Row="6" Grid.Column="3" Content="V-" Command="{Binding DualAxisRotationVerticalMinus}"/>
                 </Grid>
 
             </GroupBox>
