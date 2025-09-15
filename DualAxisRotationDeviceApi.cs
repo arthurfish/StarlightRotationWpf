@@ -16,8 +16,8 @@ namespace StarlightRotationWpf
         public bool isConnected { get; }
         private ushort horizentalAxis = 1;
         private ushort verticalAxis = 0;
-        private double horizentalEquiv = 10000 / 360.0 * 880;
-        private double verticalEquiv = 12800 / 350.0 * 180;
+        private double verticalEquiv = 10000 / 360.0 * 880;
+        private double horizentalEquiv = 12800 / 360.0 * 180;
 
         public DualAxisRotationDeviceApi(string ipAddress = "192.168.5.11")
         {
@@ -32,8 +32,8 @@ namespace StarlightRotationWpf
             LTSMC.smc_set_equiv(0, horizentalAxis, horizentalEquiv);
             LTSMC.smc_set_equiv(0, verticalAxis, verticalEquiv);
 
-            LTSMC.smc_set_profile_unit(0, horizentalAxis, 30, 30, 1, 1, 30);
-            LTSMC.smc_set_profile_unit(0, verticalAxis, 30, 30, 1, 1, 30);
+            LTSMC.smc_set_profile_unit(0, horizentalAxis, 0, 10, 0, 0, 0);
+            LTSMC.smc_set_profile_unit(0, verticalAxis, 0, 10, 0, 0, 0);
         }
 
         ~DualAxisRotationDeviceApi()
