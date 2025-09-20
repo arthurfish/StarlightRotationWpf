@@ -14,8 +14,8 @@ namespace StarlightRotationWpf
     public class DualAxisRotationDeviceApi
     {
         public bool isConnected { get; }
-        private ushort horizentalAxis = 1;
-        private ushort verticalAxis = 0;
+        private const ushort horizentalAxis = 1;
+        private const ushort verticalAxis = 0;
         private double verticalEquiv = 10000 / 360.0 * 880;
         private double horizentalEquiv = 12800 / 360.0 * 180;
         private double speed = 10;
@@ -36,10 +36,15 @@ namespace StarlightRotationWpf
 
             LTSMC.smc_set_profile_unit(0, horizentalAxis, 0, speed, 0, 0, 0);
             LTSMC.smc_set_profile_unit(0, verticalAxis, 0, speed, 0, 0, 0);
+
+            LTSMC.smc_write_sevon_pin(0, horizentalAxis, 0);
+            LTSMC.smc_write_sevon_pin(0, verticalAxis,0);
         }
 
-        ~DualAxisRotationDeviceApi()
+        public static void closeDevice()
         {
+            LTSMC.smc_write_sevon_pin(0, horizentalAxis, 1);
+            LTSMC.smc_write_sevon_pin(0, verticalAxis, 1);
             LTSMC.smc_board_close(0);
         }
 

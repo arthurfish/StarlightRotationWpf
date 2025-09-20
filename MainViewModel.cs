@@ -359,11 +359,16 @@ namespace StarlightRotationWpf
                 return;
             }
 
-            device1266.SetLightSourceCurrent(1, 0.1);
+           // device1266.SetLightSourceCurrent(1, 0.1);
 
             // 更新属性，UI会自动响应
             Device1SerialNumber = device0105.SerialNumber;
             Device2SerialNumber = device1266.SerialNumber;
+
+            device1266.SetLightSourceCurrent(1,0);
+            device1266.SetLightSourceCurrent(2, 0);
+
+            
 
             // 立即读取一次数据
             UpdateReadings();
@@ -378,12 +383,21 @@ namespace StarlightRotationWpf
         {
             if (device0105.IsConnected && device1266.IsConnected)
             {
-                var d1Read = device0105.ReadDetectorValue();
-                var d2Read = device1266.ReadDetectorValue();
+                var d1Read = device1266.ReadDetectorValue();
+                var d2Read = device0105.ReadDetectorValue();
 
                 // 更新属性，而不是直接操作UI控件
-                Device1Reading = $"{d1Read.Value}";
-                Device2Reading = $"{d2Read.Value}";
+                var d1Number = d1Read.Value * 27586.21;
+                if (d1Number < 0.01)
+                {
+                    Device1Reading = $"{d1Number:E2}";
+                }
+                else
+                {
+                    Device1Reading = $"{d1Number:F2}";
+                }
+
+                Device2Reading = $"{d2Read.Value*202183822.7:F2}";
 
 
 
@@ -396,6 +410,7 @@ namespace StarlightRotationWpf
                 Trace.WriteLine($"Dual: Got V A:{GotVerticalAngleInDegree}");
             }
         }
+        
 
 
         // --- INotifyPropertyChanged 的标准实现 ---

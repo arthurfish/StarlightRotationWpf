@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:StarlightRotationWpf"
         mc:Ignorable="d"
-        Title="Starlight Instrument Control" Height="462" Width="648">
+        Title="Starlight Instrument Control" Height="700" Width="1300">
 
     <!-- 1. 设置窗口的DataContext（数据上下文）为我们的ViewModel -->
     <Window.DataContext>
@@ -13,7 +13,10 @@
     </Window.DataContext>
 
     <StackPanel Orientation="Horizontal">
-        <GroupBox Header="Starlight Control" Width="314" Margin="10,0,0,0" Height="333">
+        <StackPanel.RenderTransform>
+            <MatrixTransform/>
+        </StackPanel.RenderTransform>
+        <GroupBox Header="光源控制" Width="500" Margin="10,0,0,0" Height="500"  FontSize="24">
             <Grid Margin="15,15,-2,33">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/>
@@ -40,33 +43,33 @@
                 </Grid.ColumnDefinitions>
 
                 <!-- Device 1 Info -->
-                <TextBlock Grid.Row="0" Grid.Column="0" Text="Device 1 Serial Number:" FontWeight="Bold" Margin="0,0,10,5"/>
-                <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding Device1SerialNumber}" />
+                <TextBlock Grid.Row="0" Grid.Column="0" Text="设备1序列号:" FontWeight="Bold" Margin="0,0,10,5" FontSize="24"/>
+                <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding Device1SerialNumber}"  FontSize="24"/>
 
                 <!-- Device 2 Info -->
-                <TextBlock Grid.Row="1" Grid.Column="0" Text="Device 2 Serial Number:" FontWeight="Bold" Margin="0,0,10,5"/>
-                <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding Device2SerialNumber}" />
+                <TextBlock Grid.Row="1" Grid.Column="0" Text="设备2序列号:" FontWeight="Bold" Margin="0,0,10,5" FontSize="24"/>
+                <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding Device2SerialNumber}" FontSize="24"/>
 
-                <TextBlock Grid.Row="3" Grid.Column="0" Text="Device 1 Lux:" FontWeight="Bold" Margin="0,0,10,5"/>
-                <TextBlock Grid.Row="3" Grid.Column="1" Text="{Binding Device1Reading}" />
+                <TextBlock Grid.Row="3" Grid.Column="0" Text="小球探测器亮度 (Nit):" FontWeight="Bold" Margin="0,0,10,5" FontSize="24"/>
+                <TextBlock Grid.Row="3" Grid.Column="1" Text="{Binding Device1Reading}"  FontSize="24"/>
 
 
-                <TextBlock Grid.Row="4" Grid.Column="0" Text="Device 2 Lux:" FontWeight="Bold" Margin="0,0,10,5"/>
-                <TextBlock Grid.Row="4" Grid.Column="1" Text="{Binding Device2Reading}" />
+                <TextBlock Grid.Row="4" Grid.Column="0" Text="大球探测器亮度 (Nit):" FontWeight="Bold" Margin="0,0,10,5"  FontSize="24" />
+                <TextBlock Grid.Row="4" Grid.Column="1" Text="{Binding Device2Reading}"  FontSize="24"/>
 
-                <TextBlock Grid.Row="6" Grid.Column="0" Grid.ColumnSpan="1" Text="Light1 Currency(mA):" FontWeight="Bold" Margin="0,0,10,5"/>
-                <TextBox Grid.Row="6" Grid.Column="1" Text="{Binding Light1CurrencyMilliAmpere}"/>
-                <Slider Grid.Row="7" Grid.ColumnSpan="2"  Minimum="0" Maximum="1000" Value="{Binding Light1CurrencyMilliAmpere}"/>
+                <TextBlock Grid.Row="6" Grid.Column="0" Grid.ColumnSpan="1" Text="小球光源输入电流:" FontWeight="Bold" Margin="0,0,10,5" FontSize="24"/>
+                <TextBox Grid.Row="6" Grid.Column="1" Text="{Binding Light2CurrencyMilliAmpere}"/>
+                <Slider Grid.Row="7" Grid.ColumnSpan="2"  Minimum="0" Maximum="1000" Value="{Binding Light2CurrencyMilliAmpere}"  FontSize="24"/>
 
-                <TextBlock Grid.Row="8" Grid.Column="0" Grid.ColumnSpan="1" Text="Light2 Currency(mA):" FontWeight="Bold" Margin="0,0,10,5" />
-                <TextBox Grid.Row="8" Grid.Column="1" Text="{Binding Light2CurrencyMilliAmpere}"/>
-                <Slider Grid.Row="9" Grid.ColumnSpan="2" Minimum="0" Maximum="1000" Value="{Binding Light2CurrencyMilliAmpere}"/>
-                <Button x:Name="buttonZeroDetector1" Content="Zero Detector-1" Grid.Row="11" Grid.ColumnSpan="2" Margin="0,10,0,0" Width="291" Command="{Binding ZeroDetector1Command}"/>
-                <Button x:Name="buttonZeroDetector2" Content="Zero Detector-2" Grid.Row="12" Grid.ColumnSpan="2" Margin="0,10,0,0" Width="291" Command="{Binding ZeroDetector2Command}"/>
+                <TextBlock Grid.Row="8" Grid.Column="0" Grid.ColumnSpan="1" Text="大球光源输入电流:" FontWeight="Bold" Margin="0,0,10,5"  FontSize="24"/>
+                <TextBox Grid.Row="8" Grid.Column="1" Text="{Binding Light1CurrencyMilliAmpere}"  FontSize="24"/>
+                <Slider Grid.Row="9" Grid.ColumnSpan="2" Minimum="0" Maximum="1000" Value="{Binding Light1CurrencyMilliAmpere}"  FontSize="24"/>
+                <Button x:Name="buttonZeroDetector1" Content="小球探测器清零" Grid.Row="11" Grid.ColumnSpan="2" Margin="0,10,0,0" Width="291" Command="{Binding ZeroDetector1Command}"  FontSize="24"/>
+                <Button x:Name="buttonZeroDetector2" Content="大球探测器清零" Grid.Row="12" Grid.ColumnSpan="2" Margin="0,10,0,0" Width="291" Command="{Binding ZeroDetector2Command}"  FontSize="24"/>
             </Grid>
         </GroupBox>
         <StackPanel>
-            <GroupBox Header="Filter Wheel Control" Margin="10,0,0,0" Width="281">
+            <GroupBox Header="星点板转轮控制" Margin="10,0,0,0" Width="500" FontSize="24">
                 <Grid HorizontalAlignment="Center" Height="266" Margin="2,0,0,0">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="Auto"/>
@@ -79,21 +82,21 @@
                         <RowDefinition Height="Auto"/>
                         <RowDefinition Height="Auto"/>
                     </Grid.RowDefinitions>
-                    <Button Grid.Row="0" Content="0.014mm" Command="{Binding FilterWheelRotateCommand}" CommandParameter="1"  Margin="0,0,0,10"/>
-                    <Button Grid.Row="1" Content="0.035mm" Command="{Binding FilterWheelRotateCommand}" CommandParameter="2"  Margin="0,0,0,10"/>
-                    <Button Grid.Row="2" Content="0.056mm" Command="{Binding FilterWheelRotateCommand}" CommandParameter="3"  Margin="0,0,0,10"/>
-                    <Button Grid.Row="3" Content="0.084mm" Command="{Binding FilterWheelRotateCommand}" CommandParameter="4"  Margin="0,0,0,10"/>
-                    <Button Grid.Row="4" Content="0.110mm" Command="{Binding FilterWheelRotateCommand}" CommandParameter="5"  Margin="0,0,0,10"/>
-                    <Button Grid.Row="5" Content="0.140mm" Command="{Binding FilterWheelRotateCommand}" CommandParameter="6"  Margin="0,0,0,10"/>
+                    <Button Grid.Row="0" Content="0.014mm" Command="{Binding FilterWheelRotateCommand}" CommandParameter="1"  Margin="0,0,0,10"  FontSize="24"/>
+                    <Button Grid.Row="1" Content="0.035mm" Command="{Binding FilterWheelRotateCommand}" CommandParameter="2"  Margin="0,0,0,10"  FontSize="24"/>
+                    <Button Grid.Row="2" Content="0.056mm" Command="{Binding FilterWheelRotateCommand}" CommandParameter="3"  Margin="0,0,0,10"  FontSize="24"/>
+                    <Button Grid.Row="3" Content="0.084mm" Command="{Binding FilterWheelRotateCommand}" CommandParameter="4"  Margin="0,0,0,10" FontSize="24"/>
+                    <Button Grid.Row="4" Content="0.110mm" Command="{Binding FilterWheelRotateCommand}" CommandParameter="5"  Margin="0,0,0,10"  FontSize="24"/>
+                    <Button Grid.Row="5" Content="0.140mm" Command="{Binding FilterWheelRotateCommand}" CommandParameter="6"  Margin="0,0,0,10"  FontSize="24"/>
                 </Grid>
             </GroupBox>
-            <GroupBox Header="Dual Axis Control">
+            <GroupBox Header="四轴转台控制"  FontSize="24" Width="600">
                 <Grid>
                     <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="250"/>
                         <ColumnDefinition Width="90"/>
-                        <ColumnDefinition Width="60"/>
-                        <ColumnDefinition Width="60"/>
-                        <ColumnDefinition Width="60"/>
+                        <ColumnDefinition Width="90"/>
+                        <ColumnDefinition Width="90"/>
                     </Grid.ColumnDefinitions>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto"/>
@@ -106,30 +109,30 @@
                         <RowDefinition Height="Auto"/>
                     </Grid.RowDefinitions>
 
-                    <TextBlock Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" Text="Speed"/>
-                    <TextBox Grid.Row="0" Grid.Column="2" Grid.ColumnSpan="2" Text="{Binding rotationSpeed}"/>
+                    <TextBlock Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" Text="速度"  FontSize="24"/>
+                    <TextBox Grid.Row="0" Grid.Column="2" Grid.ColumnSpan="2" Text="{Binding rotationSpeed}" FontSize="24"/>
                     
-                    <TextBlock Grid.Row="1" Grid.Column="0" Text="Horizental"/>
-                    <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding HorizentalAngleInDegree}"/>
-                    <Button Grid.Row="1" Grid.Column="2" Content="Go!" Command="{Binding DualAxisRotationGoHorizental}"/>
-                    <TextBlock Grid.Row="1" Grid.Column="3" Text="{Binding GotHorizontalAngleInDegree}"/>
+                    <TextBlock Grid.Row="1" Grid.Column="0" Text="目标水平位置（度）"/>
+                    <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding HorizentalAngleInDegree}" FontSize="24"/>
+                    <Button Grid.Row="1" Grid.Column="2" Content="执行" Command="{Binding DualAxisRotationGoHorizental}" FontSize="24"/>
+                    <TextBlock Grid.Row="1" Grid.Column="3" Text="{Binding GotHorizontalAngleInDegree}" FontSize="24"/>
 
-                    <TextBlock Grid.Row="2" Grid.Column="0" Text="Vertical"/>
-                    <TextBox Grid.Row="2" Grid.Column="1" Text="{Binding VerticalAngleInDegree}"/>
-                    <Button Grid.Row="2" Grid.Column="2" Content="Go!" Command="{Binding DualAxisRotationGoVertical}"/>
-                    <TextBlock Grid.Row="2" Grid.Column="3" Text="{Binding GotVerticalAngleInDegree}"/>
+                    <TextBlock Grid.Row="2" Grid.Column="0" Text="目标垂直位置（度）" FontSize="24"/>
+                    <TextBox Grid.Row="2" Grid.Column="1" Text="{Binding VerticalAngleInDegree}" FontSize="24"/>
+                    <Button Grid.Row="2" Grid.Column="2" Content="执行" Command="{Binding DualAxisRotationGoVertical}" FontSize="24"/>
+                    <TextBlock Grid.Row="2" Grid.Column="3" Text="{Binding GotVerticalAngleInDegree}" FontSize="24"/>
 
-                    <Button Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="4" Content="STOP" Command="{Binding DualAxisRotationStop}"/>
+                    <Button Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="4" Content="停止" Command="{Binding DualAxisRotationStop}" FontSize="24"/>
 
-                    <TextBlock Grid.Row="5" Grid.Column="0" Text="H Step Size"/>
-                    <TextBox Grid.Row="5" Grid.Column="1" Text="{Binding HorizentalStepSizeInDegree}"/>
-                    <Button Grid.Row="5" Grid.Column="2" Content="H+" Command="{Binding DualAxisRotationHorizenAdd}"/>
-                    <Button Grid.Row="5" Grid.Column="3" Content="H-" Command="{Binding DualAxisRotationHorizenMinus}"/>
+                    <TextBlock Grid.Row="5" Grid.Column="0" Text="水平转动步长（度）" FontSize="24"/>
+                    <TextBox Grid.Row="5" Grid.Column="1" Text="{Binding HorizentalStepSizeInDegree}" FontSize="24"/>
+                    <Button Grid.Row="5" Grid.Column="2" Content=" + " Command="{Binding DualAxisRotationHorizenAdd}" FontSize="24"/>
+                    <Button Grid.Row="5" Grid.Column="3" Content=" - " Command="{Binding DualAxisRotationHorizenMinus}" FontSize="24"/>
 
-                    <TextBlock Grid.Row="6" Grid.Column="0" Text="V Step Size"/>
-                    <TextBox Grid.Row="6" Grid.Column="1" Text="{Binding VerticalStepSizeInDegree}"/>
-                    <Button Grid.Row="6" Grid.Column="2" Content="V+" Command="{Binding DualAxisRotationVerticalAdd}"/>
-                    <Button Grid.Row="6" Grid.Column="3" Content="V-" Command="{Binding DualAxisRotationVerticalMinus}"/>
+                    <TextBlock Grid.Row="6" Grid.Column="0" Text="垂直转动步长（度）"  FontSize="24"/>
+                    <TextBox Grid.Row="6" Grid.Column="1" Text="{Binding VerticalStepSizeInDegree}" FontSize="24"/>
+                    <Button Grid.Row="6" Grid.Column="2" Content=" + " Command="{Binding DualAxisRotationVerticalAdd}" FontSize="24"/>
+                    <Button Grid.Row="6" Grid.Column="3" Content=" - " Command="{Binding DualAxisRotationVerticalMinus}" FontSize="24"/>
                 </Grid>
 
             </GroupBox>
