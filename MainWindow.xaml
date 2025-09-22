@@ -36,6 +36,9 @@
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto"/>
@@ -66,6 +69,11 @@
                 <Slider Grid.Row="9" Grid.ColumnSpan="2" Minimum="0" Maximum="1000" Value="{Binding Light1CurrencyMilliAmpere}"  FontSize="24"/>
                 <Button x:Name="buttonZeroDetector1" Content="小球探测器清零" Grid.Row="11" Grid.ColumnSpan="2" Margin="0,10,0,0" Width="291" Command="{Binding ZeroDetector1Command}"  FontSize="24"/>
                 <Button x:Name="buttonZeroDetector2" Content="大球探测器清零" Grid.Row="12" Grid.ColumnSpan="2" Margin="0,10,0,0" Width="291" Command="{Binding ZeroDetector2Command}"  FontSize="24"/>
+                <TextBlock Grid.Row="13" Grid.Column="0" Text="期待星等" FontSize="24"/>
+                <TextBox Grid.Row="13" Grid.Column="1" Text="{Binding ExpectedMagnitude}"/>
+                <TextBlock Grid.Row="14" Grid.Column="0" Text="期待亮度" FontSize="24"/>
+                <TextBlock Grid.Row="14" Grid.Column="1" Text="{Binding ExpectedBrightness}"/>
+                <Button x:Name="AutoTuneCurrency" Content="Auto Tune Currency" Grid.Row="15" Grid.ColumnSpan="2" Margin="0,10,0,0" Width="291" Command="{Binding AutoTuneCurrency}"  FontSize="24"/>
             </Grid>
         </GroupBox>
         <StackPanel>

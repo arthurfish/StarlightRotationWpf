@@ -30,6 +30,10 @@ namespace StarlightRotationWpf
         private string _device2ReadingValue = "N/A";
         private int _light1CurrencyMilliAmpere = 0;
         private int _light2CurrencyMilliAmpere = 0;
+        private double _expectedMagnitude = 0;
+        private double _expectedBrightness = 0;
+
+        private int _filterWheelPosition;
 
         private double _horizentalAngleInDegree = 0;
         private double _verticalAngleInDegree = 0;
@@ -44,6 +48,7 @@ namespace StarlightRotationWpf
 
         public ICommand ZeroDetector1Command { get; private set; }
         public ICommand ZeroDetector2Command { get; private set; }
+        public ICommand AutoTuneCurrency { get; private set; }
 
         public ICommand FilterWheelRotateCommand { get; private set; }
 
@@ -104,7 +109,8 @@ namespace StarlightRotationWpf
         public int Light1CurrencyMilliAmpere
         {
             get => _light1CurrencyMilliAmpere;
-            set {
+            set
+            {
                 if (value > 1000)
                     value = 1000;
                 if (value < 0)
@@ -127,6 +133,67 @@ namespace StarlightRotationWpf
                 device1266.SetLightSourceCurrent(2, value / 1000.0);
                 _light2CurrencyMilliAmpere = value;
                 OnPropertyChanged();
+            }
+        }
+
+        private double _filterPositionToSize(int pos)
+        {
+            if (pos == 0)
+                return 0.014;
+            else if (pos == 1)
+                return 0.035;
+            else if (pos == 2)
+                return 0.056;
+            else if (pos == 3)
+                return 0.084;
+            else if (pos == 4)
+                return 0.11;
+            else if (pos == 5)
+                return 0.14;
+            return 0;
+        }
+
+        public double ExpectedMagnitude
+        {
+            get => _expectedMagnitude;
+            set
+            {
+                if (value > 9)
+                    value = 9;
+                if (value < -3)
+                    value = -3;
+                _expectedMagnitude = value;
+                ExpectedBrightness = GetBrightnessByMagnitudeAndSize(_expectedMagnitude, _filterPositionToSize(FilterWheelPosition));
+                OnPropertyChanged();
+            }
+        }
+
+        public double ExpectedBrightness
+        {
+            get => _expectedBrightness;
+            set
+            {
+                _expectedBrightness = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public int FilterWheelPosition
+        {
+            get => _filterWheelPosition;
+            set
+            {
+                if (value != _filterWheelPosition)
+                {
+                    var result = FilterWheelApi.SetPosition(wheelhandle, value);
+                    if (result != 0)
+                    {
+                        Trace.WriteLine(FilterWheelApi.GetErrorMessage(result));
+                        return;
+                    }
+                    _filterWheelPosition = value;
+                    OnPropertyChanged();
+                }
             }
         }
 
@@ -175,7 +242,7 @@ namespace StarlightRotationWpf
             get => _gotHorizentalAngleInDegree;
             set
             {
-                _gotHorizentalAngleInDegree= value;
+                _gotHorizentalAngleInDegree = value;
                 OnPropertyChanged();
             }
         }
@@ -185,7 +252,7 @@ namespace StarlightRotationWpf
             get => _gotVerticalAngleInDegree;
             set
             {
-                _gotVerticalAngleInDegree= value;
+                _gotVerticalAngleInDegree = value;
                 OnPropertyChanged();
             }
         }
@@ -200,13 +267,17 @@ namespace StarlightRotationWpf
                 OnPropertyChanged();
             }
         }
+
+        double GetBrightnessByMagnitudeAndSize(double magnitude, double size)
+        {
+            return 0.00494 * Math.Pow(2.512, -magnitude) / (size * size);
+        }
         // --- 构造函数 (初始化逻辑) ---
         public MainViewModel()
         {
             InitializeDevices();
 
-            Trace.WriteLine("Preparing Wheel....");
-            wheelhandle = FilterWheelApi.InitializeDeviceAndGetHandle("COM6");
+
 
             // 使用DispatcherTimer，它能确保Tick事件在UI线程上执行，避免跨线程问题
             _timer = new DispatcherTimer();
@@ -234,25 +305,25 @@ namespace StarlightRotationWpf
                 canExecute: (_) => device0105.IsConnected // 只有在设备连接时，按钮才可用
                 );
             ZeroDetector2Command = new AsyncRelayCommand<Object>(
-                execute: (_) => Task.Run(() => {
+                execute: (_) => Task.Run(() =>
+                {
                     try
                     {
                         device1266.ZeroDetector();
                     }
-                    catch(Exception _) {
+                    catch (Exception _)
                     {
-                        Trace.WriteLine("ZeroDetector1 ERROR!");
+                        {
+                            Trace.WriteLine("ZeroDetector1 ERROR!");
+                        }
                     }
-                }}),
+                }),
                 canExecute: (_) => device1266.IsConnected // 只有在设备连接时，按钮才可用
                 );
             FilterWheelRotateCommand = new AsyncRelayCommand<string>(
-                execute: (s) => Task.Run(() => {
-                    var result = FilterWheelApi.SetPosition(wheelhandle, int.Parse(s));
-                    if(result != 0)
-                    {
-                        Trace.WriteLine(FilterWheelApi.GetErrorMessage(result));
-                    }
+                execute: (s) => Task.Run(() =>
+                {
+                    FilterWheelPosition = int.Parse(s);
                 }),
                 canExecute: (_) =>
                 {
@@ -269,7 +340,7 @@ namespace StarlightRotationWpf
                 return dualAxisRotationDeviceApi.isAvaliable();
             });
 
-            DualAxisRotationGoVertical= new AsyncRelayCommand<string>(
+            DualAxisRotationGoVertical = new AsyncRelayCommand<string>(
                 execute: (s) => Task.Run(() =>
                 {
                     dualAxisRotationDeviceApi.setVerticalRotationInDegree(VerticalAngleInDegree);
@@ -333,6 +404,54 @@ namespace StarlightRotationWpf
     {
         return dualAxisRotationDeviceApi.isAvaliable();
     });
+            AutoTuneCurrency = new AsyncRelayCommand<string>(
+                execute: (s) => Task.Run(() =>
+                {
+
+                    double SetBrightnessByCurrency(double currency)
+                    {
+                        if (currency < 1000)
+                        {
+                            Light1CurrencyMilliAmpere = (int)currency;
+                            return device0105.ReadDetectorValue().Value;
+
+                        }
+                        else
+                        {
+                            Light1CurrencyMilliAmpere = 1000;
+                            Light2CurrencyMilliAmpere = (int)(currency - 1000);
+                            return device0105.ReadDetectorValue().Value;
+                        }
+                    }
+
+                    var epsilon = 1e-3;
+                    var currentLeft = 0;
+                    var currentRight = 1000;
+
+                    while (true)
+                    {
+                        var brightness = SetBrightnessByCurrency((double)currentLeft);
+                        if (Math.Abs(currentRight - currentLeft) < epsilon || Math.Abs(brightness - ExpectedBrightness) < epsilon)
+                        {
+                            break;
+                        }
+                        var m = (currentLeft + currentRight) / 2;
+                        var fm = SetBrightnessByCurrency(m);
+                        if(fm < ExpectedBrightness)
+                        {
+                            currentLeft = (int)fm;
+                        }
+                        else
+                        {
+                            currentRight = (int)fm;
+                        }
+                    }
+                }),
+                canExecute: (_) =>
+                {
+                    return true;
+                }
+            );
 
         }
 
@@ -341,6 +460,11 @@ namespace StarlightRotationWpf
 
         private void InitializeDevices()
         {
+            Trace.WriteLine("Preparing Wheel....");
+            wheelhandle = FilterWheelApi.InitializeDeviceAndGetHandle("COM6");
+            var readPosition = 0;
+            FilterWheelApi.GetDevicePositionCount(wheelhandle, out readPosition);
+            FilterWheelPosition = readPosition;
             // 这里可以添加try-catch来处理连接失败的情况
             // 为了简化，我们假设它能成功
             device0105.Connect();
@@ -359,16 +483,16 @@ namespace StarlightRotationWpf
                 return;
             }
 
-           // device1266.SetLightSourceCurrent(1, 0.1);
+            // device1266.SetLightSourceCurrent(1, 0.1);
 
             // 更新属性，UI会自动响应
             Device1SerialNumber = device0105.SerialNumber;
             Device2SerialNumber = device1266.SerialNumber;
 
-            device1266.SetLightSourceCurrent(1,0);
+            device1266.SetLightSourceCurrent(1, 0);
             device1266.SetLightSourceCurrent(2, 0);
 
-            
+
 
             // 立即读取一次数据
             UpdateReadings();
@@ -397,7 +521,7 @@ namespace StarlightRotationWpf
                     Device1Reading = $"{d1Number:F2}";
                 }
 
-                Device2Reading = $"{d2Read.Value*202183822.7:F2}";
+                Device2Reading = $"{d2Read.Value * 202183822.7:F2}";
 
 
 
@@ -410,7 +534,7 @@ namespace StarlightRotationWpf
                 Trace.WriteLine($"Dual: Got V A:{GotVerticalAngleInDegree}");
             }
         }
-        
+
 
 
         // --- INotifyPropertyChanged 的标准实现 ---
