@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -41,18 +42,18 @@ namespace StarlightRotationWpf
 
                     // 将 JSON 字符串反序列化为对象
                     AppSettings settings = JsonSerializer.Deserialize<AppSettings>(jsonString);
-                    Console.WriteLine("设置已成功加载。");
+                    Trace.WriteLine("设置已成功加载。");
                     this.HorizentalBias = settings.HorizentalBias;
                     this.VerticalBias = settings.VerticalBias;
                 }
                 else
                 {
-                    Console.WriteLine("设置文件不存在，将返回默认设置。");
+                    Trace.WriteLine("设置文件不存在，将返回默认设置。");
                 }
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"加载设置时出错: {ex.Message}");
+                Trace.WriteLine($"加载设置时出错: {ex.Message}");
             }
         }
     }

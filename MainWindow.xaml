@@ -53,7 +53,7 @@
                     <TextBlock Text="小球电流输入(mA)" Grid.Row="4" Grid.Column="0"/>
                     <TextBlock Grid.Row="4" Grid.Column="1">
                         <TextBlock.Text>
-                            <Binding Source="{Binding Light2CurrencyMilliAmpere}" UpdateSourceTrigger="PropertyChanged"/>
+                            <Binding Path="Light2CurrencyMilliAmpere" UpdateSourceTrigger="PropertyChanged"/>
                         </TextBlock.Text>
                     </TextBlock>
                     <Slider Value="{Binding Light2CurrencyMilliAmpere}" Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="2" Maximum="1000" Minimum="0" IsSnapToTickEnabled="True" TickFrequency="0.1" LargeChange="100"/>
@@ -61,7 +61,7 @@
                     <TextBlock Text="大球电流输入(mA)" Grid.Row="7" Grid.Column="0"/>
                     <TextBlock Grid.Row="7" Grid.Column="1">
                         <TextBlock.Text>
-                            <Binding Source="{Binding Light2CurrencyMilliAmpere}" UpdateSourceTrigger="PropertyChanged"/>
+                            <Binding Path="Light2CurrencyMilliAmpere" UpdateSourceTrigger="PropertyChanged"/>
                         </TextBlock.Text>
                     </TextBlock>
                     <Slider Value="{Binding Light2CurrencyMilliAmpere}" Grid.Row="8" Grid.Column="0" Grid.ColumnSpan="2" Maximum="1000" Minimum="0" IsSnapToTickEnabled="True" TickFrequency="0.1" LargeChange="100"/>
@@ -124,12 +124,12 @@
                         <TextBox Text="{Binding HorizentalRotationSpeed}" Grid.Row="0" Grid.Column="1"/>
 
                         <TextBlock Text="期望角度(度)" Grid.Row="1" Grid.Column="0"/>
-                        <TextBox Text="{Binding HorizentalRotationSpeed}" Grid.Row="1" Grid.Column="1"/>
+                        <TextBox Text="{Binding HorizentalAngleInDegree}" Grid.Row="1" Grid.Column="1"/>
 
-                        <Button Content="执行移动" Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2"/>
+                        <Button Content="执行移动" Command="{Binding DualAxisRotationGoHorizental}" Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2"/>
 
                         <TextBlock Text="当前角度(度)" Grid.Row="3" Grid.Column="0"/>
-                        <TextBlock Text="{Binding HorizentalRotationSpeed }" Grid.Row="3" Grid.Column="1"/>
+                        <TextBlock Text="{Binding GotHorizontalAngleInDegree }" Grid.Row="3" Grid.Column="1"/>
 
                         <Button Content="设置零位(度)" Command="{Binding DualAxisRotationSetHorizentalBias}" Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="2"/>
 

@@ -312,6 +312,7 @@ namespace StarlightRotationWpf
             set
             {
                 _horizentalBias = value;
+                HorizentalAngleInDegree += HorizentalBias;
                 OnPropertyChanged();
             }
         }
@@ -322,6 +323,7 @@ namespace StarlightRotationWpf
             set
             {
                 _verticalBias = value;
+                VerticalAngleInDegree += VerticalBias;
                 OnPropertyChanged();
             }
         }
@@ -338,7 +340,8 @@ namespace StarlightRotationWpf
             InitializeDevices();
 
             var appSettings = new AppSettings();
-            appSettings.LoadSettings("setting.json");
+            Trace.WriteLine("Loading Bias Data..............");
+            appSettings.LoadSettings("settings.json");
             HorizentalBias = appSettings.HorizentalBias;
             VerticalBias = appSettings.VerticalBias;
 
@@ -349,8 +352,9 @@ namespace StarlightRotationWpf
             _timer.Tick += OnTimerTick;
             _timer.Start();
 
-            _horizentalAngleInDegree = dualAxisRotationDeviceApi.getHorizentalRotationInDegree();
-            _verticalAngleInDegree = dualAxisRotationDeviceApi.getVerticalRotationInDegree();
+            Trace.WriteLine($"H:{HorizentalAngleInDegree} H_b:{HorizentalBias} V:{VerticalAngleInDegree} V_b:{VerticalBias}");
+            HorizentalAngleInDegree = dualAxisRotationDeviceApi.getHorizentalRotationInDegree() + HorizentalBias;
+            VerticalAngleInDegree = dualAxisRotationDeviceApi.getVerticalRotationInDegree() + VerticalBias;
 
             ZeroDetector1Command = new AsyncRelayCommand<Object>(
                 execute: (Object) => Task.Run(() =>
