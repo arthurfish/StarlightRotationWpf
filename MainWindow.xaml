@@ -15,13 +15,15 @@
     <StackPanel Orientation="Horizontal">
         <StackPanel.Resources >
             <Style TargetType="TextBlock" >
-                <Setter Property="FontSize" Value="25"/>
+                <Setter Property="FontSize" Value="23"/>
             </Style>
             <Style TargetType="GroupBox">
                 <Setter Property="FontSize" Value="28"/>
             </Style>
- 
-        </StackPanel.Resources>
+            <Style TargetType="Button">
+                <Setter Property="FontSize" Value="23"/>
+            </Style>
+         </StackPanel.Resources>
 
         <StackPanel Orientation="Vertical">
             <GroupBox Header="光源亮度控制">
@@ -71,7 +73,8 @@
             <GroupBox Header="星点大小选择">
                 <GroupBox.Resources>
                     <Style TargetType="Button">
-                        <Setter Property="Margin" Value="3"/>
+                        <Setter Property="Margin" Value="2"/>
+                        <Setter Property="FontSize" Value="23"/>
                     </Style>
                 </GroupBox.Resources>
                 <Grid HorizontalAlignment="Center">
@@ -79,14 +82,14 @@
                         <ColumnDefinition Width="Auto"/>
                     </Grid.ColumnDefinitions>
                     <Grid.RowDefinitions>
-                        <RowDefinition Height="55"/>
-                        <RowDefinition Height="55"/>
-                        <RowDefinition Height="55"/>
-                        <RowDefinition Height="55"/>
-                        <RowDefinition Height="55"/>
-                        <RowDefinition Height="55"/>
-                        <RowDefinition Height="55"/>
-                        <RowDefinition Height="55"/>
+                        <RowDefinition Height="33"/>
+                        <RowDefinition Height="33"/>
+                        <RowDefinition Height="33"/>
+                        <RowDefinition Height="33"/>
+                        <RowDefinition Height="33"/>
+                        <RowDefinition Height="33"/>
+                        <RowDefinition Height="33"/>
+                        <RowDefinition Height="33"/>
                     </Grid.RowDefinitions>
 
                     <TextBlock Text="{Binding FilterWheelString}" Grid.Row="0" Grid.Column="0"/>
@@ -103,44 +106,86 @@
 
         <StackPanel Orientation="Vertical">
             <GroupBox Header="转台控制">
-                <GroupBox Header="转动控制">
-                    <Grid>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="150"/>
-                            <ColumnDefinition Width="150"/>
-                        </Grid.ColumnDefinitions>
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="33"/>
-                            <RowDefinition Height="33"/>
-                            <RowDefinition Height="33"/>
-                            <RowDefinition Height="33"/>
-                            <RowDefinition Height="33"/>
-                            <RowDefinition Height="33"/>
-                            <RowDefinition Height="33"/>
-                            <RowDefinition Height="33"/>
-                            <RowDefinition Height="33"/>
-                        </Grid.RowDefinitions>
-                        <TextBlock Text="转动速度" Grid.Row="0" Grid.Column="0"/>
-                        <TextBox Text="{Binding HorizentalRotationSpeed}" Grid.Row="0" Grid.Column="1"/>
+                <StackPanel Orientation="Vertical">
+                    <GroupBox Header="转动控制">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="150"/>
+                                <ColumnDefinition Width="150"/>
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="33"/>
+                                <RowDefinition Height="33"/>
+                                <RowDefinition Height="33"/>
+                                <RowDefinition Height="33"/>
+                                <RowDefinition Height="33"/>
+                                <RowDefinition Height="33"/>
+                                <RowDefinition Height="33"/>
+                                <RowDefinition Height="33"/>
+                                <RowDefinition Height="33"/>
+                            </Grid.RowDefinitions>
+                            <TextBlock Text="转动速度" Grid.Row="0" Grid.Column="0"/>
+                            <TextBox Text="{Binding HorizentalRotationSpeed}" Grid.Row="0" Grid.Column="1"/>
 
-                        <TextBlock Text="期望角度(度)" Grid.Row="1" Grid.Column="0"/>
-                        <TextBox Text="{Binding HorizentalAngleInDegree}" Grid.Row="1" Grid.Column="1"/>
+                            <TextBlock Text="期望角度(度)" Grid.Row="1" Grid.Column="0"/>
+                            <TextBox Text="{Binding HorizentalAngleInDegree}" Grid.Row="1" Grid.Column="1"/>
 
-                        <Button Content="执行移动" Command="{Binding DualAxisRotationGoHorizental}" Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2"/>
+                            <Button Content="执行移动" Command="{Binding DualAxisRotationGoHorizental}" Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2"/>
 
-                        <TextBlock Text="当前角度(度)" Grid.Row="3" Grid.Column="0"/>
-                        <TextBlock Text="{Binding GotHorizontalAngleInDegree }" Grid.Row="3" Grid.Column="1"/>
+                            <TextBlock Text="当前角度(度)" Grid.Row="3" Grid.Column="0"/>
+                            <TextBlock Text="{Binding GotHorizontalAngleInDegree }" Grid.Row="3" Grid.Column="1"/>
 
-                        <Button Content="设置零位(度)" Command="{Binding DualAxisRotationSetHorizentalBias}" Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="2"/>
+                            <Button Content="设置零位(度)" Command="{Binding DualAxisRotationSetHorizentalBias}" Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="2"/>
 
-                        <TextBlock Text="转动步长(度)" Grid.Row="6" Grid.Column="0"/>
-                        <TextBlock Text="{Binding HorizentalStepSizeInDegree}" Grid.Row="6" Grid.Column="1"/>
+                            <TextBlock Text="转动步长(度)" Grid.Row="6" Grid.Column="0"/>
+                            <TextBox Text="{Binding HorizentalStepSizeInDegree}" Grid.Row="6" Grid.Column="1"/>
 
-                        <Button Content="正方向转动" Command="{Binding DualAxisRotationHorizenAdd}" Grid.Row="7" Grid.Column="0"/>
-                        <Button Content="负方向转动" Command="{Binding DualAxisRotationHorizenMinus}" Grid.Row="7" Grid.Column="1"/>
-                        <Button Content="停止" Command="{Binding DualAxisRotationStop}" Grid.Row="8" Grid.Column="0" Grid.ColumnSpan="2"/>
-                    </Grid>
-                </GroupBox>
+                            <Button Content="正方向转动" Command="{Binding DualAxisRotationHorizenAdd}" Grid.Row="7" Grid.Column="0"/>
+                            <Button Content="负方向转动" Command="{Binding DualAxisRotationHorizenMinus}" Grid.Row="7" Grid.Column="1"/>
+                            <Button Content="停止" Command="{Binding DualAxisRotationStop}" Grid.Row="8" Grid.Column="0" Grid.ColumnSpan="2"/>
+                        </Grid>
+                    </GroupBox>
+
+                    <GroupBox Header="滚动控制">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="150"/>
+                                <ColumnDefinition Width="150"/>
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="33"/>
+                                <RowDefinition Height="33"/>
+                                <RowDefinition Height="33"/>
+                                <RowDefinition Height="33"/>
+                                <RowDefinition Height="33"/>
+                                <RowDefinition Height="33"/>
+                                <RowDefinition Height="33"/>
+                                <RowDefinition Height="33"/>
+                                <RowDefinition Height="33"/>
+                            </Grid.RowDefinitions>
+                            <TextBlock Text="滚动速度" Grid.Row="0" Grid.Column="0"/>
+                            <TextBox Text="{Binding VerticalRotationSpeed}" Grid.Row="0" Grid.Column="1"/>
+
+                            <TextBlock Text="期望角度(度)" Grid.Row="1" Grid.Column="0"/>
+                            <TextBox Text="{Binding VerticalAngleInDegree}" Grid.Row="1" Grid.Column="1"/>
+
+                            <Button Content="执行移动" Command="{Binding DualAxisRotationGoVertical}" Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2"/>
+
+                            <TextBlock Text="当前角度(度)" Grid.Row="3" Grid.Column="0"/>
+                            <TextBlock Text="{Binding GotVerticalAngleInDegree }" Grid.Row="3" Grid.Column="1"/>
+
+                            <Button Content="设置零位(度)" Command="{Binding DualAxisRotationSetVerticalBias}" Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="2"/>
+
+                            <TextBlock Text="转动步长(度)" Grid.Row="6" Grid.Column="0"/>
+                            <TextBox Text="{Binding VerticalStepSizeInDegree}" Grid.Row="6" Grid.Column="1"/>
+
+                            <Button Content="正方向转动" Command="{Binding DualAxisRotationVerticalAdd}" Grid.Row="7" Grid.Column="0"/>
+                            <Button Content="负方向转动" Command="{Binding DualAxisRotationVerticalMinus}" Grid.Row="7" Grid.Column="1"/>
+                            <Button Content="停止" Command="{Binding DualAxisRotationStop}" Grid.Row="8" Grid.Column="0" Grid.ColumnSpan="2"/>
+                        </Grid>
+                    </GroupBox>
+
+                </StackPanel>
             </GroupBox>
         </StackPanel>
     </StackPanel>

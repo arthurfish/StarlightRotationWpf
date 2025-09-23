@@ -312,7 +312,6 @@ namespace StarlightRotationWpf
             set
             {
                 _horizentalBias = value;
-                HorizentalAngleInDegree += HorizentalBias;
                 OnPropertyChanged();
             }
         }
@@ -323,7 +322,6 @@ namespace StarlightRotationWpf
             set
             {
                 _verticalBias = value;
-                VerticalAngleInDegree += VerticalBias;
                 OnPropertyChanged();
             }
         }
@@ -476,9 +474,13 @@ namespace StarlightRotationWpf
             DualAxisRotationSetHorizentalBias = new AsyncRelayCommand<Object>(
                 execute: (obj) => Task.Run(() =>
                 {
-                    HorizentalBias = -HorizentalAngleInDegree + HorizentalBias;
-                    appSettings.HorizentalBias = HorizentalBias;
-                    appSettings.SaveSettings("settings.json");
+                    if (HorizentalAngleInDegree != 0)
+                    {
+                        HorizentalBias = -HorizentalAngleInDegree + HorizentalBias;
+                        HorizentalAngleInDegree = 0;
+                        appSettings.HorizentalBias = HorizentalBias;
+                        appSettings.SaveSettings("settings.json");
+                    }
                 }),
                 canExecute: (_) =>
                 {
@@ -488,9 +490,13 @@ namespace StarlightRotationWpf
             DualAxisRotationSetVerticalBias = new AsyncRelayCommand<Object>(
                 execute: (obj) => Task.Run(() =>
                 {
-                    VerticalBias = -VerticalStepSizeInDegree + VerticalBias;
-                    appSettings.VerticalBias = VerticalBias;
-                    appSettings.SaveSettings("settings.json");
+                    if (VerticalAngleInDegree != 0)
+                    {
+                        VerticalBias = -VerticalStepSizeInDegree + VerticalBias;
+                        VerticalAngleInDegree = 0;
+                        appSettings.VerticalBias = VerticalBias;
+                        appSettings.SaveSettings("settings.json");
+                    }
                 }),
                 canExecute: (_) =>
                 {
