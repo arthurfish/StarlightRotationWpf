@@ -4,6 +4,11 @@
              xmlns:local="clr-namespace:StarlightRotationWpf"
              StartupUri="MainWindow.xaml">
     <Application.Resources>
-         
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <!-- 在这里引用你的共享资源文件 -->
+                <ResourceDictionary Source="SharedResources.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
     </Application.Resources>
 </Application>
