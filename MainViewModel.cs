@@ -35,6 +35,7 @@ namespace StarlightRotationWpf
         private double _expectedBrightness = 0;
 
         private int _filterWheelPosition;
+        private string _filterWheelPositionString;
 
         private double _horizentalAngleInDegree = 0;
         private double _verticalAngleInDegree = 0;
@@ -42,10 +43,15 @@ namespace StarlightRotationWpf
         private double _horizentalStepSizeInDegree = 10;
         private double _verticalStepSizeInDegree = 10;
 
-        private double _rotationSpeed = 10;
+        private double _horizentalRotationSpeed = 5;
+        private double _verticalRotationSpeed = 5;
 
         private double _gotHorizentalAngleInDegree = 0;
         private double _gotVerticalAngleInDegree = 0;
+
+        private double _horizentalBias = 0;
+        private double _verticalBias = 0;
+
 
         public ICommand ZeroDetector1Command { get; private set; }
         public ICommand ZeroDetector2Command { get; private set; }
@@ -60,6 +66,9 @@ namespace StarlightRotationWpf
         public ICommand DualAxisRotationHorizenMinus { get; private set; }
         public ICommand DualAxisRotationVerticalAdd { get; private set; }
         public ICommand DualAxisRotationVerticalMinus { get; private set; }
+
+        public ICommand DualAxisRotationSetHorizentalBias { get; private set; }
+        public ICommand DualAxisRotationSetVerticalBias { get; private set; }
 
 
         // --- 公开属性 (供View绑定) ---
@@ -200,6 +209,21 @@ namespace StarlightRotationWpf
             }
         }
 
+        public string FilterWheelString
+        {
+            get => FilterWheelPosition switch
+            {
+                0 => "0.002° (0.014mm)",
+                1 => "0.005° (0.035mm)",
+                2 => "0.008° (0.056mm)",
+                3 => "0.012° (0.084mm)",
+                4 => "0.016° (0.110mm)",
+                5 => "0.020° (0.140mm)",
+                _ => "Nothing",
+            };
+
+        }
+
         public double HorizentalAngleInDegree
         {
             get => _horizentalAngleInDegree;
@@ -260,13 +284,44 @@ namespace StarlightRotationWpf
             }
         }
 
-        public double rotationSpeed
+        public double HorizentalRotationSpeed
         {
-            get => _rotationSpeed;
+            get => _horizentalRotationSpeed;
             set
             {
-                _rotationSpeed = value;
-                dualAxisRotationDeviceApi.Speed = value;
+                _horizentalRotationSpeed = value;
+                dualAxisRotationDeviceApi.HorizentalSpeed = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public double VerticalRotationSpeed
+        {
+            get => _verticalAngleInDegree;
+            set
+            {
+                _verticalAngleInDegree = value;
+                dualAxisRotationDeviceApi.VerticalSpeed = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public double HorizentalBias
+        {
+            get => _horizentalBias;
+            set
+            {
+                _horizentalBias = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public double VerticalBias
+        {
+            get => _verticalBias;
+            set
+            {
+                _verticalBias = value;
                 OnPropertyChanged();
             }
         }
@@ -274,7 +329,7 @@ namespace StarlightRotationWpf
         double GetBrightnessByMagnitudeAndSize(double magnitude, double size)
         {
             var result = 0.00494 * Math.Pow(2.512, -magnitude) / (size * size);
-            Trace.WriteLine("Magnitude: "+magnitude+" , size: " + size + ", result: " + result);
+            Trace.WriteLine("Magnitude: " + magnitude + " , size: " + size + ", result: " + result);
             return result;
         }
         // --- 构造函数 (初始化逻辑) ---
@@ -282,6 +337,10 @@ namespace StarlightRotationWpf
         {
             InitializeDevices();
 
+            var appSettings = new AppSettings();
+            appSettings.LoadSettings("setting.json");
+            HorizentalBias = appSettings.HorizentalBias;
+            VerticalBias = appSettings.VerticalBias;
 
 
             // 使用DispatcherTimer，它能确保Tick事件在UI线程上执行，避免跨线程问题
@@ -338,7 +397,7 @@ namespace StarlightRotationWpf
             DualAxisRotationGoHorizental = new AsyncRelayCommand<string>(
             execute: (s) => Task.Run(() =>
             {
-                dualAxisRotationDeviceApi.setHorizentalRotationInDegree(HorizentalAngleInDegree);
+                dualAxisRotationDeviceApi.setHorizentalRotationInDegree(HorizentalAngleInDegree - HorizentalBias);
             }),
             canExecute: (_) =>
             {
@@ -348,7 +407,7 @@ namespace StarlightRotationWpf
             DualAxisRotationGoVertical = new AsyncRelayCommand<string>(
                 execute: (s) => Task.Run(() =>
                 {
-                    dualAxisRotationDeviceApi.setVerticalRotationInDegree(VerticalAngleInDegree);
+                    dualAxisRotationDeviceApi.setVerticalRotationInDegree(VerticalAngleInDegree - VerticalBias);
                 }),
                 canExecute: (_) =>
                 {
@@ -369,7 +428,7 @@ namespace StarlightRotationWpf
                 execute: (s) => Task.Run(() =>
                 {
                     HorizentalAngleInDegree += HorizentalStepSizeInDegree;
-                    dualAxisRotationDeviceApi.setHorizentalRotationInDegree(HorizentalAngleInDegree);
+                    dualAxisRotationDeviceApi.setHorizentalRotationInDegree(HorizentalAngleInDegree - HorizentalBias);
                 }),
                 canExecute: (_) =>
                 {
@@ -381,7 +440,7 @@ namespace StarlightRotationWpf
                 execute: (s) => Task.Run(() =>
                 {
                     HorizentalAngleInDegree -= HorizentalStepSizeInDegree;
-                    dualAxisRotationDeviceApi.setHorizentalRotationInDegree(HorizentalAngleInDegree);
+                    dualAxisRotationDeviceApi.setHorizentalRotationInDegree(HorizentalAngleInDegree - HorizentalBias);
                 }),
                 canExecute: (_) =>
                 {
@@ -392,7 +451,7 @@ namespace StarlightRotationWpf
                 execute: (s) => Task.Run(() =>
                 {
                     VerticalAngleInDegree += VerticalStepSizeInDegree;
-                    dualAxisRotationDeviceApi.setVerticalRotationInDegree(VerticalAngleInDegree);
+                    dualAxisRotationDeviceApi.setVerticalRotationInDegree(VerticalAngleInDegree - VerticalBias);
                 }),
                 canExecute: (_) =>
                 {
@@ -400,96 +459,39 @@ namespace StarlightRotationWpf
                 });
 
             DualAxisRotationVerticalMinus = new AsyncRelayCommand<Object>(
-    execute: (obj) => Task.Run(() =>
-    {
-        VerticalAngleInDegree -= VerticalStepSizeInDegree;
-        dualAxisRotationDeviceApi.setVerticalRotationInDegree(VerticalAngleInDegree);
-    }),
-    canExecute: (_) =>
-    {
-        return dualAxisRotationDeviceApi.isAvaliable();
-    });
-            AutoTuneCurrency = new AsyncRelayCommand<string>(
-                execute: (s) => Task.Run(() =>
+                execute: (obj) => Task.Run(() =>
                 {
-                    _timer.Stop();
-
-                    double SetBrightnessByCurrency(double currency)
-                    {
-                        if (currency < 1000)
-                        {
-                            Light2CurrencyMilliAmpere = (int)currency;
-                            Light1CurrencyMilliAmpere = 0;
-                            Thread.Sleep(500);
-                            var reading = device0105.ReadDetectorValue().Value * 202183822.7;
-                            Device2Reading = $"{reading:F3}";
-                            Trace.WriteLine($"Reading value: {reading:F3}");
-                            return reading;
-
-                        }
-                        else
-                        {
-                            Light2CurrencyMilliAmpere = 1000;
-                            Light1CurrencyMilliAmpere = (int)(currency - 1000);
-                            Thread.Sleep(500);
-                            var reading = device0105.ReadDetectorValue().Value * 202183822.7;
-                            Device2Reading = $"{reading:F3}";
-                            Trace.WriteLine($"Reading value: {reading:F3}");
-                            return reading;
-                        }
-                    }
-                    /*
-                    var epsilon = 1e-2;
-                    var currentLeft = 0;
-                    var currentRight = 2000;
-
-                    while (true)
-                    {
-                        var brightness = SetBrightnessByCurrency((double)currentLeft);
-
-                        if (Math.Abs(currentRight - currentLeft) < epsilon || Math.Abs(brightness - ExpectedBrightness) < epsilon)
-                        {
-                            break;
-                        }
-                        var m = (currentLeft + currentRight) / 2.0;
-                        var fm = SetBrightnessByCurrency(m);
-                        Trace.WriteLine(String.Format("Bisection: l:{0} r:{1} f(l):{2} f(m):{3} e:{4}\n", currentLeft, currentRight, brightness, fm, ExpectedBrightness));
-                        if (fm < ExpectedBrightness)
-                        {
-                            currentLeft = (int)m;
-                        }
-                        else
-                        {
-                            currentRight = (int)m;
-                        }
-                    }*/
-                    double curr = 0.0;
-                    double epsilon = 1;
-                    double learningRate = 10;
-                    while (true)
-                    {
-                        Thread.Sleep(500);
-                        var brightness = SetBrightnessByCurrency(curr);
-                        var grad = ExpectedBrightness - brightness;
-                        curr = curr + learningRate * grad;
-                        if(learningRate > grad)
-                        {
-                            learningRate =Math.Min(learningRate * 0.8, grad);
-                        }
-                        Trace.WriteLine($"x: {curr}, f(x): {brightness}, f(x*): {ExpectedBrightness}, grad: {grad}, lr: {learningRate}");
-                        if(Math.Abs(ExpectedBrightness - brightness) < epsilon)
-                        {
-                            break;
-                        }
-                    }
-                    _timer.Start();
+                    VerticalAngleInDegree -= VerticalStepSizeInDegree;
+                    dualAxisRotationDeviceApi.setVerticalRotationInDegree(VerticalAngleInDegree - VerticalBias);
                 }),
                 canExecute: (_) =>
                 {
-                    return true;
-                }
-            );
+                    return dualAxisRotationDeviceApi.isAvaliable();
+                });
 
+            DualAxisRotationSetHorizentalBias = new AsyncRelayCommand<Object>(
+                execute: (obj) => Task.Run(() =>
+                {
+                    HorizentalBias = -HorizentalAngleInDegree + HorizentalBias;
+                    appSettings.HorizentalBias = HorizentalBias;
+                    appSettings.SaveSettings("settings.json");
+                }),
+                canExecute: (_) =>
+                {
+                    return dualAxisRotationDeviceApi.isAvaliable();
+                });
+
+            DualAxisRotationSetVerticalBias = new AsyncRelayCommand<Object>(
+                execute: (obj) => Task.Run(() =>
+                {
+                    VerticalBias = -VerticalStepSizeInDegree + VerticalBias;
+                    appSettings.VerticalBias = VerticalBias;
+                    appSettings.SaveSettings("settings.json");
+                }),
+                canExecute: (_) =>
+                {
+                    return dualAxisRotationDeviceApi.isAvaliable();
+                });
         }
 
 
@@ -502,7 +504,7 @@ namespace StarlightRotationWpf
             var readPosition = 0;
             FilterWheelApi.GetPosition(wheelhandle, out readPosition);
             FilterWheelPosition = readPosition;
-            Trace.WriteLine("Wheel Position: " + FilterWheelPosition +"f(pos): "+_filterPositionToSize(FilterWheelPosition));
+            Trace.WriteLine("Wheel Position: " + FilterWheelPosition + "f(pos): " + _filterPositionToSize(FilterWheelPosition));
             // 这里可以添加try-catch来处理连接失败的情况
             // 为了简化，我们假设它能成功
             device0105.Connect();
@@ -566,10 +568,10 @@ namespace StarlightRotationWpf
             }
             if (dualAxisRotationDeviceApi.isConnected)
             {
-                GotHorizontalAngleInDegree = dualAxisRotationDeviceApi.getHorizentalRotationInDegree();
-                GotVerticalAngleInDegree = dualAxisRotationDeviceApi.getVerticalRotationInDegree();
-//                Trace.WriteLine($"Dual: Got H A:{GotHorizontalAngleInDegree}");
-//                Trace.WriteLine($"Dual: Got V A:{GotVerticalAngleInDegree}");
+                GotHorizontalAngleInDegree = dualAxisRotationDeviceApi.getHorizentalRotationInDegree() + HorizentalBias;
+                GotVerticalAngleInDegree = dualAxisRotationDeviceApi.getVerticalRotationInDegree() + VerticalBias;
+                //                Trace.WriteLine($"Dual: Got H A:{GotHorizontalAngleInDegree}");
+                //                Trace.WriteLine($"Dual: Got V A:{GotVerticalAngleInDegree}");
             }
         }
 
