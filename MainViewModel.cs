@@ -150,17 +150,17 @@ namespace StarlightRotationWpf
 
         private double _filterPositionToSize(int pos)
         {
-            if (pos == 0)
+            if (pos == 1)
                 return 0.014;
-            else if (pos == 1)
-                return 0.035;
             else if (pos == 2)
-                return 0.056;
+                return 0.035;
             else if (pos == 3)
-                return 0.084;
+                return 0.056;
             else if (pos == 4)
-                return 0.11;
+                return 0.084;
             else if (pos == 5)
+                return 0.11;
+            else if (pos == 6)
                 return 0.14;
             return 0;
         }
@@ -172,8 +172,8 @@ namespace StarlightRotationWpf
             {
                 if (value > 9)
                     value = 9;
-                if (value < -3)
-                    value = -3;
+                if (value < -6)
+                    value = -6;
                 _expectedMagnitude = value;
                 ExpectedBrightness = GetBrightnessByMagnitudeAndSize(_expectedMagnitude, _filterPositionToSize(FilterWheelPosition));
                 OnPropertyChanged();
@@ -197,7 +197,10 @@ namespace StarlightRotationWpf
             {
                 if (value != _filterWheelPosition)
                 {
+                    FilterWheelPositionString = "当前位置：[ " + _filterPositionToString(value) + " ]";
+                    ExpectedBrightness = GetBrightnessByMagnitudeAndSize(ExpectedMagnitude, _filterPositionToSize(FilterWheelPosition));
                     var result = FilterWheelApi.SetPosition(wheelhandle, value);
+
                     if (result != 0)
                     {
                         Trace.WriteLine(FilterWheelApi.GetErrorMessage(result));
@@ -209,19 +212,24 @@ namespace StarlightRotationWpf
             }
         }
 
-        public string FilterWheelString
+        private string _filterPositionToString(int position) => position switch
         {
-            get => FilterWheelPosition switch
-            {
-                0 => "0.002° (0.014mm)",
-                1 => "0.005° (0.035mm)",
-                2 => "0.008° (0.056mm)",
-                3 => "0.012° (0.084mm)",
-                4 => "0.016° (0.110mm)",
-                5 => "0.020° (0.140mm)",
-                _ => "Nothing",
-            };
+            1 => "0.002° (0.014mm)",
+            2 => "0.005° (0.035mm)",
+            3 => "0.008° (0.056mm)",
+            4 => "0.012° (0.084mm)",
+            5 => "0.016° (0.110mm)",
+            6 => "0.020° (0.140mm)",
+            _ => "Nothing",
+        };
 
+        public string FilterWheelPositionString
+        {
+            get => _filterWheelPositionString;
+            set {
+                _filterWheelPositionString = value;
+                OnPropertyChanged();
+            }
         }
 
         public double HorizentalAngleInDegree
@@ -289,6 +297,14 @@ namespace StarlightRotationWpf
             get => _horizentalRotationSpeed;
             set
             {
+                if(value < -8)
+                {
+                    value = -8;
+                }
+                if(value > 8)
+                {
+                    value = 8;
+                }
                 _horizentalRotationSpeed = value;
                 dualAxisRotationDeviceApi.HorizentalSpeed = value;
                 OnPropertyChanged();
@@ -297,9 +313,13 @@ namespace StarlightRotationWpf
 
         public double VerticalRotationSpeed
         {
-            get => _verticalAngleInDegree;
+            get => _verticalRotationSpeed;
             set
             {
+                if (value < -10)
+                    value = -10;
+                if (value > 10)
+                    value = 10;
                 _verticalAngleInDegree = value;
                 dualAxisRotationDeviceApi.VerticalSpeed = value;
                 OnPropertyChanged();
@@ -328,7 +348,7 @@ namespace StarlightRotationWpf
 
         double GetBrightnessByMagnitudeAndSize(double magnitude, double size)
         {
-            var result = 0.00494 * Math.Pow(2.512, -magnitude) / (size * size);
+            var result = 0.00493888 * Math.Pow(2.512, -magnitude) / (size * size);
             Trace.WriteLine("Magnitude: " + magnitude + " , size: " + size + ", result: " + result);
             return result;
         }
@@ -492,7 +512,7 @@ namespace StarlightRotationWpf
                 {
                     if (VerticalAngleInDegree != 0)
                     {
-                        VerticalBias = -VerticalStepSizeInDegree + VerticalBias;
+                        VerticalBias = -VerticalAngleInDegree + VerticalBias;
                         VerticalAngleInDegree = 0;
                         appSettings.VerticalBias = VerticalBias;
                         appSettings.SaveSettings("settings.json");

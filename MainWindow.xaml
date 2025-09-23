@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:StarlightRotationWpf"
         mc:Ignorable="d"
-        Title="Starlight Instrument Control" Height="854" Width="1000">
+        Title="Starlight Instrument Control" Height="879" Width="813">
 
     <!-- 1. 设置窗口的DataContext（数据上下文）为我们的ViewModel -->
     <Window.DataContext>
@@ -19,11 +19,13 @@
             </Style>
             <Style TargetType="GroupBox">
                 <Setter Property="FontSize" Value="28"/>
+                <Setter Property="Margin" Value="10"/>
+                <Setter Property="Padding" Value="10"/>
             </Style>
             <Style TargetType="Button">
                 <Setter Property="FontSize" Value="23"/>
             </Style>
-         </StackPanel.Resources>
+        </StackPanel.Resources>
 
         <StackPanel Orientation="Vertical">
             <GroupBox Header="光源亮度控制">
@@ -47,10 +49,10 @@
                     <TextBox Text="{Binding ExpectedMagnitude}" Grid.Row="0" Grid.Column="1"/>
 
                     <TextBlock Text="对应期望亮度" Grid.Row="1" Grid.Column="0"/>
-                    <TextBox Text="{Binding ExpectedBrightness}" Grid.Row="1" Grid.Column="1"/>
+                    <TextBlock Text="{Binding ExpectedBrightness}" Grid.Row="1" Grid.Column="1"/>
 
                     <TextBlock Text="当前亮度(Nit)" Grid.Row="2" Grid.Column="0"/>
-                    <TextBox Text="{Binding Device2Reading}" Grid.Row="2" Grid.Column="1"/>
+                    <TextBlock Text="{Binding Device2Reading}" Grid.Row="2" Grid.Column="1"/>
 
                     <TextBlock Text="小球电流输入(mA)" Grid.Row="4" Grid.Column="0"/>
                     <TextBlock Grid.Row="4" Grid.Column="1">
@@ -63,10 +65,10 @@
                     <TextBlock Text="大球电流输入(mA)" Grid.Row="7" Grid.Column="0"/>
                     <TextBlock Grid.Row="7" Grid.Column="1">
                         <TextBlock.Text>
-                            <Binding Path="Light2CurrencyMilliAmpere" UpdateSourceTrigger="PropertyChanged"/>
+                            <Binding Path="Light1CurrencyMilliAmpere" UpdateSourceTrigger="PropertyChanged"/>
                         </TextBlock.Text>
                     </TextBlock>
-                    <Slider Value="{Binding Light2CurrencyMilliAmpere}" Grid.Row="8" Grid.Column="0" Grid.ColumnSpan="2" Maximum="1000" Minimum="0" IsSnapToTickEnabled="True" TickFrequency="0.1" LargeChange="100"/>
+                    <Slider Value="{Binding Light1CurrencyMilliAmpere}" Grid.Row="8" Grid.Column="0" Grid.ColumnSpan="2" Maximum="1000" Minimum="0" IsSnapToTickEnabled="True" TickFrequency="0.1" LargeChange="100"/>
                 </Grid>
             </GroupBox>
 
@@ -92,7 +94,9 @@
                         <RowDefinition Height="33"/>
                     </Grid.RowDefinitions>
 
-                    <TextBlock Text="{Binding FilterWheelString}" Grid.Row="0" Grid.Column="0"/>
+                    <Border>
+                        <TextBlock Text="{Binding FilterWheelPositionString}" Grid.Row="0" Grid.Column="0"/>
+                    </Border>
                     <Button Content="0.002° (0.014mm)"  Command="{Binding FilterWheelRotateCommand}" CommandParameter="1"  Grid.Row="2" Grid.Column="0"/>
                     <Button Content="0.005° (0.035mm)"  Command="{Binding FilterWheelRotateCommand}" CommandParameter="2"  Grid.Row="3" Grid.Column="0"/>
                     <Button Content="0.008° (0.056mm)"  Command="{Binding FilterWheelRotateCommand}" CommandParameter="3"  Grid.Row="4" Grid.Column="0"/>
