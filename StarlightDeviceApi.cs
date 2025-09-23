@@ -249,7 +249,7 @@ namespace StarlightRotation
         {
             if (!IsConnected)
             {
-                throw new InvalidOperationException("操作失败：设备未连接。请先调用 Connect() 方法。");
+                 throw new InvalidOperationException("操作失败：设备未连接。请先调用 Connect() 方法。");
             }
         }
 

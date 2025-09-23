@@ -6,6 +6,7 @@ using System.ComponentModel;
 using System.Configuration;
 using System.Diagnostics;
 using System.Linq;
+using System.Printing.IndexedProperties;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
@@ -28,8 +29,8 @@ namespace StarlightRotationWpf
         private string _device2SerialNumber = "Connecting...";
         private string _device1ReadingValue = "N/A";
         private string _device2ReadingValue = "N/A";
-        private int _light1CurrencyMilliAmpere = 0;
-        private int _light2CurrencyMilliAmpere = 0;
+        private double _light1CurrencyMilliAmpere = 0;
+        private double _light2CurrencyMilliAmpere = 0;
         private double _expectedMagnitude = 0;
         private double _expectedBrightness = 0;
 
@@ -106,7 +107,7 @@ namespace StarlightRotationWpf
             }
         }
 
-        public int Light1CurrencyMilliAmpere
+        public double Light1CurrencyMilliAmpere
         {
             get => _light1CurrencyMilliAmpere;
             set
@@ -117,11 +118,12 @@ namespace StarlightRotationWpf
                     value = 0;
                 device1266.SetLightSourceCurrent(1, value / 1000.0);
                 _light1CurrencyMilliAmpere = value;
+                Trace.WriteLine("Light1 set mA: " + value);
                 OnPropertyChanged();
             }
         }
 
-        public int Light2CurrencyMilliAmpere
+        public double Light2CurrencyMilliAmpere
         {
             get => _light2CurrencyMilliAmpere;
             set
@@ -132,6 +134,7 @@ namespace StarlightRotationWpf
                     value = 0;
                 device1266.SetLightSourceCurrent(2, value / 1000.0);
                 _light2CurrencyMilliAmpere = value;
+                Trace.WriteLine("Light2 set mA: " + value);
                 OnPropertyChanged();
             }
         }
@@ -270,7 +273,9 @@ namespace StarlightRotationWpf
 
         double GetBrightnessByMagnitudeAndSize(double magnitude, double size)
         {
-            return 0.00494 * Math.Pow(2.512, -magnitude) / (size * size);
+            var result = 0.00494 * Math.Pow(2.512, -magnitude) / (size * size);
+            Trace.WriteLine("Magnitude: "+magnitude+" , size: " + size + ", result: " + result);
+            return result;
         }
         // --- 构造函数 (初始化逻辑) ---
         public MainViewModel()
@@ -407,45 +412,77 @@ namespace StarlightRotationWpf
             AutoTuneCurrency = new AsyncRelayCommand<string>(
                 execute: (s) => Task.Run(() =>
                 {
+                    _timer.Stop();
 
                     double SetBrightnessByCurrency(double currency)
                     {
                         if (currency < 1000)
                         {
-                            Light1CurrencyMilliAmpere = (int)currency;
-                            return device0105.ReadDetectorValue().Value;
+                            Light2CurrencyMilliAmpere = (int)currency;
+                            Light1CurrencyMilliAmpere = 0;
+                            Thread.Sleep(500);
+                            var reading = device0105.ReadDetectorValue().Value * 202183822.7;
+                            Device2Reading = $"{reading:F3}";
+                            Trace.WriteLine($"Reading value: {reading:F3}");
+                            return reading;
 
                         }
                         else
                         {
-                            Light1CurrencyMilliAmpere = 1000;
-                            Light2CurrencyMilliAmpere = (int)(currency - 1000);
-                            return device0105.ReadDetectorValue().Value;
+                            Light2CurrencyMilliAmpere = 1000;
+                            Light1CurrencyMilliAmpere = (int)(currency - 1000);
+                            Thread.Sleep(500);
+                            var reading = device0105.ReadDetectorValue().Value * 202183822.7;
+                            Device2Reading = $"{reading:F3}";
+                            Trace.WriteLine($"Reading value: {reading:F3}");
+                            return reading;
                         }
                     }
-
-                    var epsilon = 1e-3;
+                    /*
+                    var epsilon = 1e-2;
                     var currentLeft = 0;
-                    var currentRight = 1000;
+                    var currentRight = 2000;
 
                     while (true)
                     {
                         var brightness = SetBrightnessByCurrency((double)currentLeft);
+
                         if (Math.Abs(currentRight - currentLeft) < epsilon || Math.Abs(brightness - ExpectedBrightness) < epsilon)
                         {
                             break;
                         }
-                        var m = (currentLeft + currentRight) / 2;
+                        var m = (currentLeft + currentRight) / 2.0;
                         var fm = SetBrightnessByCurrency(m);
-                        if(fm < ExpectedBrightness)
+                        Trace.WriteLine(String.Format("Bisection: l:{0} r:{1} f(l):{2} f(m):{3} e:{4}\n", currentLeft, currentRight, brightness, fm, ExpectedBrightness));
+                        if (fm < ExpectedBrightness)
                         {
-                            currentLeft = (int)fm;
+                            currentLeft = (int)m;
                         }
                         else
                         {
-                            currentRight = (int)fm;
+                            currentRight = (int)m;
+                        }
+                    }*/
+                    double curr = 0.0;
+                    double epsilon = 1;
+                    double learningRate = 10;
+                    while (true)
+                    {
+                        Thread.Sleep(500);
+                        var brightness = SetBrightnessByCurrency(curr);
+                        var grad = ExpectedBrightness - brightness;
+                        curr = curr + learningRate * grad;
+                        if(learningRate > grad)
+                        {
+                            learningRate =Math.Min(learningRate * 0.8, grad);
+                        }
+                        Trace.WriteLine($"x: {curr}, f(x): {brightness}, f(x*): {ExpectedBrightness}, grad: {grad}, lr: {learningRate}");
+                        if(Math.Abs(ExpectedBrightness - brightness) < epsilon)
+                        {
+                            break;
                         }
                     }
+                    _timer.Start();
                 }),
                 canExecute: (_) =>
                 {
@@ -463,8 +500,9 @@ namespace StarlightRotationWpf
             Trace.WriteLine("Preparing Wheel....");
             wheelhandle = FilterWheelApi.InitializeDeviceAndGetHandle("COM6");
             var readPosition = 0;
-            FilterWheelApi.GetDevicePositionCount(wheelhandle, out readPosition);
+            FilterWheelApi.GetPosition(wheelhandle, out readPosition);
             FilterWheelPosition = readPosition;
+            Trace.WriteLine("Wheel Position: " + FilterWheelPosition +"f(pos): "+_filterPositionToSize(FilterWheelPosition));
             // 这里可以添加try-catch来处理连接失败的情况
             // 为了简化，我们假设它能成功
             device0105.Connect();
@@ -530,8 +568,8 @@ namespace StarlightRotationWpf
             {
                 GotHorizontalAngleInDegree = dualAxisRotationDeviceApi.getHorizentalRotationInDegree();
                 GotVerticalAngleInDegree = dualAxisRotationDeviceApi.getVerticalRotationInDegree();
-                Trace.WriteLine($"Dual: Got H A:{GotHorizontalAngleInDegree}");
-                Trace.WriteLine($"Dual: Got V A:{GotVerticalAngleInDegree}");
+//                Trace.WriteLine($"Dual: Got H A:{GotHorizontalAngleInDegree}");
+//                Trace.WriteLine($"Dual: Got V A:{GotVerticalAngleInDegree}");
             }
         }
 
