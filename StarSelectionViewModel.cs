@@ -1,6 +1,7 @@
 ﻿// StarSelectionViewModel.cs
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
@@ -12,6 +13,7 @@ namespace StarlightRotationWpf
     public class StarSelectionViewModel : INotifyPropertyChanged
     {
         private const string StarDataFilePath = "StarData.json";
+        private readonly HardwareService _hardwareService;
 
         public ObservableCollection<StarData> Stars { get; private set; }
 
@@ -40,6 +42,14 @@ namespace StarlightRotationWpf
             set { _targetPosition = value; OnPropertyChanged(); }
         }
 
+        public int StarTableIndex
+        {
+            get => TargetPosition - 1;
+            set { 
+                OnPropertyChanged();
+            }
+        }
+
         // 用于绑定“编辑星点”文本框的属性
         private int _editStarNo;
         public int EditStarNo { get => _editStarNo; set { _editStarNo = value; OnPropertyChanged(); } }
@@ -56,14 +66,34 @@ namespace StarlightRotationWpf
         public ICommand IncrementPositionCommand { get; }
         public ICommand DecrementPositionCommand { get; }
 
-        public StarSelectionViewModel()
-        {
-            LoadStars(); // 在启动时加载数据
 
-            MoveToPositionCommand = new RelayCommand(() => System.Diagnostics.Trace.WriteLine($"Moving to star position: {TargetPosition}"));
+        public StarSelectionViewModel(HardwareService hardwareService)
+        {
+            _hardwareService = hardwareService;
+            LoadStars(); // 持久化逻辑
+
+            MoveToPositionCommand = new RelayCommand(MoveFilterWheel);
+            IncrementPositionCommand = new RelayCommand(IncrementPosition);
+            DecrementPositionCommand = new RelayCommand(DecrementPosition);
             UpdateStarCommand = new RelayCommand(UpdateAndSaveStar);
-            IncrementPositionCommand = new RelayCommand(() => { if (TargetPosition < Stars.Count) TargetPosition++; });
-            DecrementPositionCommand = new RelayCommand(() => { if (TargetPosition > 1) TargetPosition--; });
+
+            // 读取滤光轮的初始位置
+            int initialPosition = 0;
+            FilterWheelApi.GetPosition(_hardwareService.FilterWheelHandle, out initialPosition);
+            TargetPosition = initialPosition > 0 ? initialPosition : 1;
+        }
+
+        private void MoveFilterWheel()
+        {
+            if (_hardwareService.FilterWheelHandle < 0) return;
+
+            Trace.WriteLine($"Moving filter wheel to position: {TargetPosition}");
+            var result = FilterWheelApi.SetPosition(_hardwareService.FilterWheelHandle, TargetPosition);
+            if (result != 0)
+            {
+                Trace.WriteLine($"Filter wheel error: {FilterWheelApi.GetErrorMessage(result)}");
+            }
+            StarTableIndex = 666;
         }
 
         private void UpdateAndSaveStar()
@@ -134,6 +164,20 @@ namespace StarlightRotationWpf
                 new StarData { No = 5, Size = 0.11,  Angle = 0.016 },
                 new StarData { No = 6, Size = 0.14,  Angle = 0.02  }
             };
+        }
+
+        private void IncrementPosition()
+        {
+            TargetPosition += 1;
+            MoveFilterWheel();
+            StarTableIndex = 666;
+        }
+
+        private void DecrementPosition()
+        {
+            TargetPosition -= 1;
+            MoveFilterWheel();
+            StarTableIndex = 666;
         }
 
         public event PropertyChangedEventHandler PropertyChanged;

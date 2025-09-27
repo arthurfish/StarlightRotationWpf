@@ -11,36 +11,79 @@
         </Border>
     </ControlTemplate>
     <!-- Other styles remain unchanged... -->
+
     <Style TargetType="GroupBox">
         <Setter Property="BorderBrush" Value="#FFAAAAAA"/>
         <Setter Property="BorderThickness" Value="1"/>
         <Setter Property="Padding" Value="5"/>
+        <Setter Property="FontSize" Value="18"/>
         <Setter Property="Margin" Value="3"/>
-        <Setter Property="HeaderTemplate">
+
+        <Setter Property="Template">
             <Setter.Value>
-                <DataTemplate>
-                    <TextBlock Text="{Binding}" Margin="3,-2" Background="{Binding Background, ElementName=groupBoxBorder}" Padding="3,0" FontSize="12"/>
-                </DataTemplate>
+                <ControlTemplate TargetType="GroupBox">
+                    <!-- 我们在这里定义了名为 groupBoxBorder 的 Border -->
+                    <Border x:Name="groupBoxBorder" 
+                        Background="{TemplateBinding Background}"
+                        BorderBrush="{TemplateBinding BorderBrush}"
+                        BorderThickness="{TemplateBinding BorderThickness}"
+                        CornerRadius="3" 
+                        SnapsToDevicePixels="True">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="*"/>
+                            </Grid.RowDefinitions>
+
+                            <!-- GroupBox Header -->
+                            <!-- 我们将 Header 放在 Border 内部，并进行一些布局调整使其看起来像在边框上 -->
+                            <Border Grid.Row="0">
+                                <ContentPresenter ContentSource="Header"
+                                              RecognizesAccessKey="True"
+                                              SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"
+                                              Margin="10,-9,0,0"
+                                              VerticalAlignment="Top"
+                                              HorizontalAlignment="Left">
+                                    <ContentPresenter.ContentTemplate>
+                                        <DataTemplate>
+                                            <!-- 现在这个绑定可以正常工作了 -->
+                                            <!-- 我们使用 RelativeSource 找到模板化的父级(GroupBox)，并绑定到它的背景 -->
+                                            <TextBlock Text="{Binding}"
+                                                   Padding="3,0" FontSize="18"
+                                                   Background="{Binding Path=Background, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type GroupBox}}}"/>
+                                        </DataTemplate>
+                                    </ContentPresenter.ContentTemplate>
+                                </ContentPresenter>
+                            </Border>
+
+                            <!-- GroupBox Content -->
+                            <ContentPresenter Grid.Row="1" 
+                                          Margin="{TemplateBinding Padding}"
+                                          SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"/>
+                        </Grid>
+                    </Border>
+                </ControlTemplate>
             </Setter.Value>
         </Setter>
     </Style>
     <Style TargetType="TextBlock">
         <Setter Property="VerticalAlignment" Value="Center"/>
-        <Setter Property="FontSize" Value="12"/>
+        <Setter Property="FontSize" Value="18"/>
     </Style>
     <Style TargetType="TextBox">
         <Setter Property="VerticalContentAlignment" Value="Center"/>
         <Setter Property="Padding" Value="3,0"/>
-        <Setter Property="FontSize" Value="12"/>
+        <Setter Property="FontSize" Value="18"/>
     </Style>
     <Style TargetType="Button">
         <Setter Property="Background" Value="#FFE0E0E0"/>
         <Setter Property="BorderBrush" Value="#FFADADAD"/>
         <Setter Property="Padding" Value="10,3"/>
         <Setter Property="Margin" Value="2"/>
-        <Setter Property="FontSize" Value="12"/>
+        <Setter Property="FontSize" Value="18"/>
     </Style>
     <Style x:Key="CustomSliderStyle" TargetType="{x:Type Slider}">
         <!-- Slider Style unchanged -->
     </Style>
+
 </ResourceDictionary>

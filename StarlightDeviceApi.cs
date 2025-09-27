@@ -97,7 +97,7 @@ namespace StarlightRotation
     /// 本封装类在连接后会校验设备的序列号，以确保连接的是目标设备。
     /// 如果您有多个设备同时连接到电脑，请确保每次只尝试连接一个，或按特定顺序连接它们。
     /// </summary>
-    class StarlightDeviceApi
+   public    class StarlightDeviceApi
     {
         private readonly LFDCQuadChannel _device;
        

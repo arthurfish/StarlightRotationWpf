@@ -34,7 +34,7 @@
         <ContentControl Grid.Row="0" Grid.Column="0" Template="{StaticResource PanelTemplate}" Tag="光源亮度控制"
                         DataContext="{Binding BrightnessControl}">
             <StackPanel Margin="5">
-                <GroupBox Header="亮度计算">
+                <GroupBox Header="亮度计算"> 
                     <Grid Margin="5">
                         <Grid.RowDefinitions>
                             <RowDefinition Height="Auto"/>
@@ -108,7 +108,7 @@
                 <GroupBox Grid.Column="0" Header="星点位置" Padding="10" Margin="0,0,10,0">
                     <StackPanel>
                         <Grid>
-                            <TextBox Text="{Binding TargetPosition}" Width="60" Padding="5,3" TextAlignment="Right"/>
+                            <TextBox Text="{Binding TargetPosition}" Width="60" Padding="5,3" TextAlignment="Left"/>
                             <StackPanel HorizontalAlignment="Right" Margin="2">
                                 <Button Content="▲" Padding="3,0" FontSize="8" Margin="0,0,0,1" Command="{Binding IncrementPositionCommand}"/>
                                 <Button Content="▼" Padding="3,0" FontSize="8" Command="{Binding DecrementPositionCommand}"/>
@@ -122,7 +122,7 @@
                         <!-- DataGrid 现在是只读的，因为编辑在下面进行 -->
                         <DataGrid ItemsSource="{Binding Stars}" SelectedItem="{Binding SelectedStar}"
                           AutoGenerateColumns="False" CanUserAddRows="False" IsReadOnly="True"
-                          SelectionMode="Single">
+                          SelectionMode="Single" SelectedIndex="{Binding Tar}">
                             <DataGrid.Columns>
                                 <DataGridTextColumn Header="序号" Binding="{Binding No}"/>
                                 <DataGridTextColumn Header="星点大小/mm" Binding="{Binding Size}"/>

@@ -89,7 +89,7 @@ public static class FilterWheelApi
     }
 
     private const int BAUD_RATE = 115200;
-    private const int TIMEOUT_S = 10;
+    private const int TIMEOUT_S = 5;
     private const int SERIAL_BUFFER_SIZE = 256;
 
     private static void ShowError(string s)
@@ -133,16 +133,6 @@ public static class FilterWheelApi
             }
 
             Trace.WriteLine($"Connected to {_deviceSerialNumber}. Handle: {_deviceHandle}.");
-
-            // Get Device ID
-            StringBuilder idBuffer = new StringBuilder(256);
-            if (FilterWheelApi.GetId(_deviceHandle, idBuffer) == 0)
-            {
-            }
-            else
-            {
-                Trace.WriteLine("Wheel: 无法读取设备ID");
-            }
 
 
             int positionCount;

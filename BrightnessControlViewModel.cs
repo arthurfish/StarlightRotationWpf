@@ -1,11 +1,13 @@
 ﻿// BrightnessControlViewModel.cs
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Runtime.CompilerServices;
 
 namespace StarlightRotationWpf
 {
     public class BrightnessControlViewModel : INotifyPropertyChanged
     {
+        private readonly HardwareService _hardwareService;
         // Properties for UI binding
         private double _inputMagnitude = -6;
         public double InputMagnitude
@@ -21,35 +23,68 @@ namespace StarlightRotationWpf
             set { _calculatedBrightness = value; OnPropertyChanged(); }
         }
 
-        private double _currentBrightness; // This would be read from a device
-        public double CurrentBrightness
+        // 用于显示设备读数，由MainViewModel更新
+        private string _currentBrightnessReading1 = "N/A";
+        public string CurrentBrightnessReading1
         {
-            get => _currentBrightness;
-            set { _currentBrightness = value; OnPropertyChanged(); }
+            get => _currentBrightnessReading1;
+            set { _currentBrightnessReading1 = value; OnPropertyChanged(); }
         }
 
-        private int _smallSphereStep;
-        public int SmallSphereStep
+        private string _currentBrightnessReading2 = "N/A";
+        public string CurrentBrightnessReading2
         {
-            get => _smallSphereStep;
-            set { _smallSphereStep = value; OnPropertyChanged(); }
+            get => _currentBrightnessReading2;
+            set { _currentBrightnessReading2 = value; OnPropertyChanged(); }
         }
 
-        private int _largeSphereStep;
-        public int LargeSphereStep
+        private double _smallSphereCurrent; // 小球光源电流 (mA)
+        public double SmallSphereCurrent
         {
-            get => _largeSphereStep;
-            set { _largeSphereStep = value; OnPropertyChanged(); }
+            get => _smallSphereCurrent;
+            set
+            {
+                if (value > 1000) value = 1000;
+                if (value < 0) value = 0;
+                _smallSphereCurrent = value;
+                // 假设小球是光源1
+                _hardwareService.Device1266?.SetLightSourceCurrent(1, value / 1000.0);
+                Trace.WriteLine("Light1 (Small Sphere) set mA: " + value);
+                OnPropertyChanged();
+            }
         }
 
-        // This would need to be linked to the star size from another ViewModel
-        // For simplicity, we can pass it in or use a shared service.
-        private double _currentStarSize = 0.014; // Default to first star size
+        private double _largeSphereCurrent; // 大球光源电流 (mA)
+        public double LargeSphereCurrent
+        {
+            get => _largeSphereCurrent;
+            set
+            {
+                if (value > 1000) value = 1000;
+                if (value < 0) value = 0;
+                _largeSphereCurrent = value;
+                // 假设大球是光源2
+                _hardwareService.Device1266?.SetLightSourceCurrent(2, value / 1000.0);
+                Trace.WriteLine("Light2 (Large Sphere) set mA: " + value);
+                OnPropertyChanged();
+            }
+        }
+
+        private double _currentStarSize = 0.014; // Default
+
+        public BrightnessControlViewModel(HardwareService hardwareService)
+        {
+            _hardwareService = hardwareService;
+            CalculateBrightness();
+        }
 
         public void UpdateStarSize(double newSize)
         {
-            _currentStarSize = newSize;
-            CalculateBrightness();
+            if (newSize > 0)
+            {
+                _currentStarSize = newSize;
+                CalculateBrightness();
+            }
         }
 
         private void CalculateBrightness()
