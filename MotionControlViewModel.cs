@@ -72,6 +72,7 @@ namespace StarlightRotationWpf
             Title = title;
             _hardwareService = hardwareService;
             _axis = axis;
+            Speed = 10;
 
             MoveCommand = new RelayCommand(MoveToTargetAngle, CanExecuteMotion);
             SetZeroCommand = new RelayCommand(ExecuteSetZero, CanExecuteMotion);

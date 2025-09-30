@@ -39,6 +39,13 @@ namespace StarlightRotationWpf
             // 4. 加载持久化设置
             LoadAllSettings();
 
+            // **新增**: 在所有对象都创建好后，立即进行一次初始的StarSize同步
+            // 这确保了BrightnessControl在程序启动时就拥有正确的初始星点尺寸
+            if (StarSelection.SelectedStar != null)
+            {
+                BrightnessControl.UpdateStarSize(StarSelection.SelectedStar.Size);
+            }
+
             // 5. 启动定时器
             _timer = new DispatcherTimer { /* ... */ };
             _timer.Tick += OnTimerTick;
@@ -55,7 +62,7 @@ namespace StarlightRotationWpf
 
         private void OnTimerTick(object sender, EventArgs e)
         {
-            // --- 更新亮度读数 ---
+/*            // --- 更新亮度读数 ---
             if (_hardwareService.IsStarlightConnected)
             {
                 var d1Read = _hardwareService.Device1266.ReadDetectorValue();
@@ -64,7 +71,7 @@ namespace StarlightRotationWpf
                 var d1Number = d1Read.Value * 27586.21;
                 BrightnessControl.CurrentBrightnessReading1 = d1Number < 0.01 ? $"{d1Number:E2}" : $"{d1Number:F2}";
                 BrightnessControl.CurrentBrightnessReading2 = $"{d2Read.Value * 202183822.7:F2}";
-            }
+            }*/
 
             // --- 更新转台角度读数 ---
             if (_hardwareService.IsRotationConnected)

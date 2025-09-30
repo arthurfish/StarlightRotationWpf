@@ -81,11 +81,21 @@ namespace StarlightRotationWpf
             int initialPosition = 0;
             FilterWheelApi.GetPosition(_hardwareService.FilterWheelHandle, out initialPosition);
             TargetPosition = initialPosition > 0 ? initialPosition : 1;
+
+            UpdateSelectedStarFromPosition();
+        }
+
+        private void UpdateSelectedStarFromPosition()
+        {
+            // 从星点列表中查找与当前位置编号匹配的星点
+            SelectedStar = Stars.FirstOrDefault(s => s.No == TargetPosition);
         }
 
         private void MoveFilterWheel()
         {
             if (_hardwareService.FilterWheelHandle < 0) return;
+
+            UpdateSelectedStarFromPosition();
 
             Trace.WriteLine($"Moving filter wheel to position: {TargetPosition}");
             var result = FilterWheelApi.SetPosition(_hardwareService.FilterWheelHandle, TargetPosition);
@@ -94,6 +104,7 @@ namespace StarlightRotationWpf
                 Trace.WriteLine($"Filter wheel error: {FilterWheelApi.GetErrorMessage(result)}");
             }
             StarTableIndex = 666;
+            
         }
 
         private void UpdateAndSaveStar()
@@ -168,16 +179,20 @@ namespace StarlightRotationWpf
 
         private void IncrementPosition()
         {
-            TargetPosition += 1;
-            MoveFilterWheel();
-            StarTableIndex = 666;
+            if (TargetPosition < Stars.Count) // 防止超出范围
+            {
+                TargetPosition++;
+                MoveFilterWheel();
+            }
         }
 
         private void DecrementPosition()
         {
-            TargetPosition -= 1;
-            MoveFilterWheel();
-            StarTableIndex = 666;
+            if (TargetPosition > 1) // 防止超出范围
+            {
+                TargetPosition--;
+                MoveFilterWheel();
+            }
         }
 
         public event PropertyChangedEventHandler PropertyChanged;

@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:StarlightRotationWpf"
         mc:Ignorable="d"
-        Title="Starlight Instrument Control" Height="750" Width="1100"
+        Title="Starlight Instrument Control" Height="900" Width="1100"
         Background="#FFE6E6E6"
         FontFamily="Microsoft YaHei">
 
@@ -61,7 +61,7 @@
                             <ColumnDefinition Width="Auto"/>
                         </Grid.ColumnDefinitions>
                         <TextBlock Grid.Column="0" Text="当前亮度 :" Margin="0,0,10,0"/>
-                        <TextBox Grid.Column="1" Text="{Binding CurrentBrightness, StringFormat={}{0:F2}}" IsReadOnly="True"/>
+                        <TextBlock Grid.Column="1" Text="{Binding CurrentBrightness, StringFormat={}{0:F2}}" />
                         <TextBlock Grid.Column="2" Text="Nit" Margin="5,0,0,0"/>
                     </Grid>
                 </Border>
@@ -77,8 +77,8 @@
                                 <ColumnDefinition/>
                             </Grid.ColumnDefinitions>
                             <TextBlock Grid.Row="0" Grid.Column="0" Margin="0,0,10,0" Text="小球光源调节步长(0~1000) :"/>
-                            <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding SmallSphereStep}"/>
-                            <Slider Grid.Row="1" Grid.ColumnSpan="2" Margin="0,5,0,0" Maximum="1000" Value="{Binding SmallSphereStep}" Style="{StaticResource CustomSliderStyle}"/>
+                            <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding SmallSphereCurrent}"/>
+                            <Slider Grid.Row="1" Grid.ColumnSpan="2" Margin="0,5,0,0" Maximum="1000" Value="{Binding SmallSphereCurrent}" Style="{StaticResource CustomSliderStyle}"/>
                         </Grid>
                         <Grid>
                             <Grid.RowDefinitions>
@@ -90,8 +90,8 @@
                                 <ColumnDefinition/>
                             </Grid.ColumnDefinitions>
                             <TextBlock Grid.Row="0" Grid.Column="0" Margin="0,0,10,0" Text="大球光源调节步长(0~1000) :"/>
-                            <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding LargeSphereStep}"/>
-                            <Slider Grid.Row="1" Grid.ColumnSpan="2" Margin="0,5,0,0" Maximum="1000" Value="{Binding LargeSphereStep}" Style="{StaticResource CustomSliderStyle}"/>
+                            <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding LargeSphereCurrent}"/>
+                            <Slider Grid.Row="1" Grid.ColumnSpan="2" Margin="0,5,0,0" Maximum="1000" Value="{Binding LargeSphereCurrent}" Style="{StaticResource CustomSliderStyle}"/>
                         </Grid>
                     </StackPanel>
                 </GroupBox>
@@ -110,7 +110,7 @@
                         <Grid>
                             <TextBox Text="{Binding TargetPosition}" Width="60" Padding="5,3" TextAlignment="Left"/>
                             <StackPanel HorizontalAlignment="Right" Margin="2">
-                                <Button Content="▲" Padding="3,0" FontSize="8" Margin="0,0,0,1" Command="{Binding IncrementPositionCommand}"/>
+                                <Button Content="▲" Padding="3,0" FontSize="8" Command="{Binding IncrementPositionCommand}"/>
                                 <Button Content="▼" Padding="3,0" FontSize="8" Command="{Binding DecrementPositionCommand}"/>
                             </StackPanel>
                         </Grid>
@@ -122,7 +122,7 @@
                         <!-- DataGrid 现在是只读的，因为编辑在下面进行 -->
                         <DataGrid ItemsSource="{Binding Stars}" SelectedItem="{Binding SelectedStar}"
                           AutoGenerateColumns="False" CanUserAddRows="False" IsReadOnly="True"
-                          SelectionMode="Single" SelectedIndex="{Binding Tar}">
+                          SelectionMode="Single" SelectedIndex="{Binding StarTableIndex}">
                             <DataGrid.Columns>
                                 <DataGridTextColumn Header="序号" Binding="{Binding No}"/>
                                 <DataGridTextColumn Header="星点大小/mm" Binding="{Binding Size}"/>

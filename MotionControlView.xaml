@@ -25,8 +25,8 @@
                         <ColumnDefinition Width="Auto"/>
                     </Grid.ColumnDefinitions>
                     <Slider VerticalAlignment="Center" Margin="0,0,5,0"
-                            Value="{Binding Speed}" Maximum="100" Style="{StaticResource CustomSliderStyle}"/>
-                    <TextBox Grid.Column="1" Text="{Binding Speed, StringFormat={}{0:F1}}" Width="50"/>
+                            Value="{Binding Speed}" Maximum="20" Style="{StaticResource CustomSliderStyle}"/>
+                    <TextBox Grid.Column="1" Text="{Binding Speed, StringFormat={}{0:F1}}" Width="60"/>
                 </Grid>
             </GroupBox>
 
@@ -37,8 +37,8 @@
                         <ColumnDefinition Width="Auto"/>
                     </Grid.ColumnDefinitions>
                     <Slider VerticalAlignment="Center" Margin="0,0,5,0"
-                            Value="{Binding Acceleration}" Maximum="100" Style="{StaticResource CustomSliderStyle}"/>
-                    <TextBox Grid.Column="1" Text="{Binding Acceleration, StringFormat={}{0:F1}}" Width="50"/>
+                            Value="{Binding Acceleration}" Maximum="20" Style="{StaticResource CustomSliderStyle}"/>
+                    <TextBox Grid.Column="1" Text="{Binding Acceleration, StringFormat={}{0:F1}}" Width="60"/>
                 </Grid>
             </GroupBox>
         </Grid>
@@ -47,7 +47,7 @@
             <GroupBox Header="转动角度">
                 <StackPanel HorizontalAlignment="Center" Margin="5">
                     <Grid>
-                        <TextBox Text="{Binding TargetAngle, UpdateSourceTrigger=PropertyChanged}" Width="60"/>
+                        <TextBox Text="{Binding TargetAngle, UpdateSourceTrigger=PropertyChanged}" Width="70"/>
                         <TextBlock Text="(°)" HorizontalAlignment="Right" Margin="5,0" IsHitTestVisible="False"/>
                     </Grid>
                     <Button Content="移动" Command="{Binding MoveCommand}" Margin="0,10,0,0"/>
@@ -56,7 +56,7 @@
             <GroupBox Header="设置零位">
                 <StackPanel HorizontalAlignment="Center" Margin="5">
                     <Grid>
-                        <TextBox Text="{Binding ZeroOffset, UpdateSourceTrigger=PropertyChanged}" Width="60"/>
+                        <TextBox Text="{Binding ZeroOffset, UpdateSourceTrigger=PropertyChanged}" Width="70"/>
                         <TextBlock Text="(°)" HorizontalAlignment="Right" Margin="5,0" IsHitTestVisible="False"/>
                     </Grid>
                     <Button Content="执行" Command="{Binding SetZeroCommand}" Margin="0,10,0,0"/>
@@ -65,7 +65,7 @@
             <GroupBox Header="转动步长">
                 <StackPanel HorizontalAlignment="Center" Margin="5">
                     <Grid>
-                        <TextBox Text="{Binding StepSize, UpdateSourceTrigger=PropertyChanged}" Width="60"/>
+                        <TextBox Text="{Binding StepSize, UpdateSourceTrigger=PropertyChanged}" Width="70"/>
                         <TextBlock Text="(°)" HorizontalAlignment="Right" Margin="5,0" IsHitTestVisible="False"/>
                     </Grid>
                     <UniformGrid Rows="1" Margin="0,10,0,0">

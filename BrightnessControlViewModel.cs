@@ -1,13 +1,17 @@
 ﻿// BrightnessControlViewModel.cs
+using System;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
+using System.Windows.Threading; // 1. 引入DispatcherTimer所在的命名空间
 
 namespace StarlightRotationWpf
 {
     public class BrightnessControlViewModel : INotifyPropertyChanged
     {
         private readonly HardwareService _hardwareService;
+        private readonly DispatcherTimer _updateTimer; // 2. 添加一个定时器成员变量
+
         // Properties for UI binding
         private double _inputMagnitude = -6;
         public double InputMagnitude
@@ -23,7 +27,7 @@ namespace StarlightRotationWpf
             set { _calculatedBrightness = value; OnPropertyChanged(); }
         }
 
-        // 用于显示设备读数，由MainViewModel更新
+        // 用于显示设备读数，由定时器自动更新
         private string _currentBrightnessReading1 = "N/A";
         public string CurrentBrightnessReading1
         {
@@ -47,8 +51,8 @@ namespace StarlightRotationWpf
                 if (value > 1000) value = 1000;
                 if (value < 0) value = 0;
                 _smallSphereCurrent = value;
-                // 假设小球是光源1
-                _hardwareService.Device1266?.SetLightSourceCurrent(1, value / 1000.0);
+                // 假设小球是光源2 (根据您的HardwareService代码，在1266设备上)
+                _hardwareService.Device1266?.SetLightSourceCurrent(2, value / 1000.0);
                 Trace.WriteLine("Light1 (Small Sphere) set mA: " + value);
                 OnPropertyChanged();
             }
@@ -63,8 +67,8 @@ namespace StarlightRotationWpf
                 if (value > 1000) value = 1000;
                 if (value < 0) value = 0;
                 _largeSphereCurrent = value;
-                // 假设大球是光源2
-                _hardwareService.Device1266?.SetLightSourceCurrent(2, value / 1000.0);
+                // 假设大球是光源1 (根据您的HardwareService代码，在1266设备上)
+                _hardwareService.Device1266?.SetLightSourceCurrent(1, value / 1000.0);
                 Trace.WriteLine("Light2 (Large Sphere) set mA: " + value);
                 OnPropertyChanged();
             }
@@ -72,10 +76,90 @@ namespace StarlightRotationWpf
 
         private double _currentStarSize = 0.014; // Default
 
+
+        private string _currentBrightness;
+        public string CurrentBrightness
+        {
+            get => _currentBrightness;
+            set {
+                _currentBrightness = value;
+                OnPropertyChanged();
+            }
+        }
+
+        // 主构造函数，用于运行时
         public BrightnessControlViewModel(HardwareService hardwareService)
         {
             _hardwareService = hardwareService;
             CalculateBrightness();
+
+            // 3. 初始化并启动定时器
+            _updateTimer = new DispatcherTimer();
+            _updateTimer.Interval = TimeSpan.FromMilliseconds(300); // 设置间隔为300毫秒
+            _updateTimer.Tick += UpdateTimer_Tick; // 绑定Tick事件的处理方法
+            _updateTimer.Start(); // 启动定时器
+        }
+
+        // 4. 定时器触发时执行的方法
+        private void UpdateTimer_Tick(object sender, EventArgs e)
+        {
+            // 确保硬件服务和设备都已连接
+            if (_hardwareService == null || !_hardwareService.IsStarlightConnected)
+            {
+                CurrentBrightnessReading1 = "设备未连接";
+                CurrentBrightnessReading2 = "设备未连接";
+                return;
+            }
+
+            try
+            {
+                // 读取设备1 (0105) 的亮度值
+                // StarlightDeviceApi.ReadDetectorValue() 返回一个 DetectorReading 结构体
+                var reading1 = _hardwareService.Device0105.ReadDetectorValue();
+                reading1.Value *= 202183822.7;
+                // 将读数格式化为更友好的字符串并更新到UI属性
+                CurrentBrightnessReading1 = $"{reading1.Value:F4} (增益: {reading1.Gain})";
+                Trace.WriteLine(CurrentBrightnessReading1);
+
+                // 读取设备2 (1266) 的亮度值
+                var reading2 = _hardwareService.Device1266.ReadDetectorValue();
+                reading2.Value *= 27586.21;
+                CurrentBrightnessReading2 = $"{reading2.Value:F4} (增益: {reading2.Gain})";
+
+                double validValue;
+                if (LargeSphereCurrent == 0)
+                {
+                    validValue = reading2.Value;
+                }
+                else
+                {
+                    validValue = reading1.Value;
+                }
+                if (validValue < 0.01)
+                {
+                    CurrentBrightness = $"{validValue:E2}";
+                }else
+                {
+                    CurrentBrightness = $"{validValue:F2}";
+                }
+//                CurrentBrightness = $"小球：{reading2.Value:E2} 大球：{reading1.Value:F2}";
+//                Trace.WriteLine(CurrentBrightnessReading2);
+            }
+            catch (Exception ex)
+            {
+                CurrentBrightnessReading2 = "读取错误";
+                Trace.WriteLine($"[Error] Reading Device: {ex.Message}");
+            }
+
+        }
+
+        /// <summary>
+        /// (可选，但建议) 提供一个方法来停止定时器，以防资源泄露。
+        /// 可以在窗口关闭或控件卸载时调用。
+        /// </summary>
+        public void StopAutoUpdate()
+        {
+            _updateTimer?.Stop();
         }
 
         public void UpdateStarSize(double newSize)
@@ -93,9 +177,11 @@ namespace StarlightRotationWpf
             CalculatedBrightness = 0.00493888 * Math.Pow(2.512, -InputMagnitude) / (_currentStarSize * _currentStarSize);
         }
 
+        // 无参构造函数，主要用于XAML设计器
         public BrightnessControlViewModel()
         {
             CalculateBrightness();
+            // 在设计模式下，我们不启动定时器
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
