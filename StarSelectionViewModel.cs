@@ -58,7 +58,11 @@ namespace StarlightRotationWpf
         public double EditStarSize { get => _editStarSize; set { _editStarSize = value; OnPropertyChanged(); } }
 
         private double _editStarAngle;
-        public double EditStarAngle { get => _editStarAngle; set { _editStarAngle = value; OnPropertyChanged(); } }
+        public double EditStarAngle { get => _editStarAngle; set {
+                _editStarAngle = value;
+                EditStarSize = Math.Round(_editStarAngle * Math.PI / 180.0 * 400, 2);
+                OnPropertyChanged(); 
+            } }
 
         // Commands
         public ICommand MoveToPositionCommand { get; }
