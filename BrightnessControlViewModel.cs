@@ -48,12 +48,12 @@ namespace StarlightRotationWpf
             get => _smallSphereCurrent;
             set
             {
-                if (value > 1000) value = 1000;
+                if (value > 1000000) value = 1000000;
                 if (value < 0) value = 0;
                 _smallSphereCurrent = value;
                 // 假设小球是光源2 (根据您的HardwareService代码，在1266设备上)
-                _hardwareService.Device1266?.SetLightSourceCurrent(2, value / 1000.0);
-                Trace.WriteLine("Light1 (Small Sphere) set mA: " + value);
+                _hardwareService.Device1266?.SetLightSourceCurrent(2, value);
+                Trace.WriteLine("Light1 (Small Sphere) set uA: " + value);
                 OnPropertyChanged();
             }
         }
@@ -64,12 +64,12 @@ namespace StarlightRotationWpf
             get => _largeSphereCurrent;
             set
             {
-                if (value > 1000) value = 1000;
+                if (value > 1000000) value = 1000000;
                 if (value < 0) value = 0;
                 _largeSphereCurrent = value;
                 // 假设大球是光源1 (根据您的HardwareService代码，在1266设备上)
-                _hardwareService.Device1266?.SetLightSourceCurrent(1, value / 1000.0);
-                Trace.WriteLine("Light2 (Large Sphere) set mA: " + value);
+                _hardwareService.Device1266?.SetLightSourceCurrent(1, value);
+                Trace.WriteLine("Light2 (Large Sphere) set uA: " + value);
                 OnPropertyChanged();
             }
         }
@@ -119,15 +119,12 @@ namespace StarlightRotationWpf
                 reading1.Value *= 202183822.7;
                 // 将读数格式化为更友好的字符串并更新到UI属性
                 CurrentBrightnessReading1 = $"{reading1.Value:F4} (增益: {reading1.Gain})";
-                Trace.WriteLine(CurrentBrightnessReading1);
 
                 // 读取设备2 (1266) 的亮度值
                 var reading2 = _hardwareService.Device1266.ReadDetectorValue();
                 reading2.Value *= 27586.21;
-                CurrentBrightnessReading2 = $"{reading2.Value:F4} (增益: {reading2.Gain})";
-
                 double validValue;
-                if (LargeSphereCurrent == 0)
+                if (Math.Abs(LargeSphereCurrent) <= 0.00001)
                 {
                     validValue = reading2.Value;
                 }
@@ -137,10 +134,10 @@ namespace StarlightRotationWpf
                 }
                 if (validValue < 0.01)
                 {
-                    CurrentBrightness = $"{validValue:E2}";
+                    CurrentBrightness = $"{validValue:E3}";
                 }else
                 {
-                    CurrentBrightness = $"{validValue:F2}";
+                    CurrentBrightness = $"{validValue:F3}";
                 }
 //                CurrentBrightness = $"小球：{reading2.Value:E2} 大球：{reading1.Value:F2}";
 //                Trace.WriteLine(CurrentBrightnessReading2);

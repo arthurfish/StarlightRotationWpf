@@ -60,7 +60,7 @@ namespace StarlightRotationWpf
         private double _editStarAngle;
         public double EditStarAngle { get => _editStarAngle; set {
                 _editStarAngle = value;
-                EditStarSize = Math.Round(_editStarAngle * Math.PI / 180.0 * 400, 2);
+                EditStarSize = Math.Round(_editStarAngle * Math.PI / 180.0 * 400, 3);
                 OnPropertyChanged(); 
             } }
 
@@ -183,16 +183,27 @@ namespace StarlightRotationWpf
 
         private void IncrementPosition()
         {
-            if (TargetPosition < Stars.Count) // 防止超出范围
+            if (TargetPosition >= Stars.Count) // 防止超出范围
+            {
+                TargetPosition = 1;
+                MoveFilterWheel();
+            }
+            else
             {
                 TargetPosition++;
                 MoveFilterWheel();
             }
+
         }
 
         private void DecrementPosition()
         {
-            if (TargetPosition > 1) // 防止超出范围
+            if (TargetPosition <= 1) // 防止超出范围
+            {
+                TargetPosition = 6;
+                MoveFilterWheel();
+            }
+            else
             {
                 TargetPosition--;
                 MoveFilterWheel();

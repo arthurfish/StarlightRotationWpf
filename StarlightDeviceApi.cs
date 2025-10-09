@@ -150,8 +150,8 @@ namespace StarlightRotation
         /// 设置指定光源通道的输出电流。
         /// </summary>
         /// <param name="channel">通道号，必须在 0 到 4 之间。</param>
-        /// <param name="currentInAmps">输出电流，单位是安培(A)。安全范围为 0.0 到 1.0 A。</param>
-        public void SetLightSourceCurrent(int channel, double currentInAmps)
+        /// <param name="currentInMiuAmps">输出电流，单位是微安(uA)。安全范围为 0.0 到 1000000 uA。</param>
+        public void SetLightSourceCurrent(int channel, double currentInMiuAmps)
         {
             EnsureConnected();
             if (channel < 0 || channel > 4)
@@ -159,12 +159,12 @@ namespace StarlightRotation
                 throw new ArgumentOutOfRangeException(nameof(channel), "通道号必须在 0 到 4 之间。");
             }
             // 根据您的补充说明，电流不要超过1A
-            if (currentInAmps < 0.0 || currentInAmps > 1.0)
+            if (currentInMiuAmps < 0.0 || currentInMiuAmps > 1000000)
             {
-                throw new ArgumentOutOfRangeException(nameof(currentInAmps), "电流值必须在 0.0 A 到 1.0 A 的安全范围内。");
+                throw new ArgumentOutOfRangeException(nameof(currentInMiuAmps), "电流值必须在 0 uA 到 1000000 uA 的安全范围内。");
             }
 
-            int result = _device.TurnOnByChannel(channel, currentInAmps);
+            int result = _device.TurnOnByChannel(channel, currentInMiuAmps / 1000.0);
             HandleDeviceApiError(result, $"设置通道 {channel} 电流");
         }
 
