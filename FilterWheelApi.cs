@@ -134,24 +134,9 @@ public static class FilterWheelApi
 
             Trace.WriteLine($"Connected to {_deviceSerialNumber}. Handle: {_deviceHandle}.");
 
+            FilterWheelApi.SetPosition(_deviceHandle, 1);
 
-            int positionCount;
-            int result = FilterWheelApi.GetDevicePositionCount(_deviceHandle, out positionCount);
-
-            if (result != 0)
-            {
-                ShowError($"Failed to get position count: {FilterWheelApi.GetErrorMessage(result)}");
-                // Don't CleanupDevice here, port is open, but critical info missing. User might want to check settings.
-                return -1; // Keep connected but indicate error
-            }
-
-            if (positionCount <= 0)
-            {
-                ShowError($"Device reported invalid position count: {positionCount}. Check Settings.");
-                return -1; // Keep connected but indicate error
-            }
-
-            Trace.WriteLine($"Wheel: 设备已连接: {_deviceSerialNumber}. 当前位置: {positionCount}.");
+            Trace.WriteLine($"Wheel: 设备已连接: {_deviceSerialNumber}.");
             return _deviceHandle;
         }
         catch (DllNotFoundException)
