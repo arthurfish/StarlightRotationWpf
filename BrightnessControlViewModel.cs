@@ -116,13 +116,13 @@ namespace StarlightRotationWpf
                 // 读取设备1 (0105) 的亮度值
                 // StarlightDeviceApi.ReadDetectorValue() 返回一个 DetectorReading 结构体
                 var reading1 = _hardwareService.Device0105.ReadDetectorValue();
-                reading1.Value *= 202183822.7;
+                reading1.Value *= 202183822.7 * 1.3;
                 // 将读数格式化为更友好的字符串并更新到UI属性
                 CurrentBrightnessReading1 = $"{reading1.Value:F4} (增益: {reading1.Gain})";
 
                 // 读取设备2 (1266) 的亮度值
                 var reading2 = _hardwareService.Device1266.ReadDetectorValue();
-                reading2.Value *= 27586.21;
+                reading2.Value *= 27586.21*0.88;
                 double validValue;
                 if (Math.Abs(LargeSphereCurrent) <= 0.00001)
                 {
@@ -171,7 +171,7 @@ namespace StarlightRotationWpf
         private void CalculateBrightness()
         {
             // The formula from your original ViewModel
-            CalculatedBrightness = 0.00493888 * Math.Pow(2.512, -InputMagnitude) / (_currentStarSize * _currentStarSize);
+            CalculatedBrightness = 0.00493888 * Math.Pow(2.512, -InputMagnitude) / (_currentStarSize * _currentStarSize) * 100;
         }
 
         // 无参构造函数，主要用于XAML设计器
