@@ -11,6 +11,8 @@ namespace StarlightRotationWpf
     {
         private readonly HardwareService _hardwareService;
         private readonly DispatcherTimer _updateTimer; // 2. 添加一个定时器成员变量
+        private double Coefficient0105;
+        private double Coefficient1266;
 
         // Properties for UI binding
         private double _inputMagnitude = -6;
@@ -93,6 +95,10 @@ namespace StarlightRotationWpf
             _hardwareService = hardwareService;
             CalculateBrightness();
 
+            var settings = new SettingsService().LoadSettings();
+            (Coefficient0105, Coefficient1266) = (settings.Coefficient0105, settings.Coefficient1266);
+            
+
             // 3. 初始化并启动定时器
             _updateTimer = new DispatcherTimer();
             _updateTimer.Interval = TimeSpan.FromMilliseconds(300); // 设置间隔为300毫秒
@@ -116,13 +122,15 @@ namespace StarlightRotationWpf
                 // 读取设备1 (0105) 的亮度值
                 // StarlightDeviceApi.ReadDetectorValue() 返回一个 DetectorReading 结构体
                 var reading1 = _hardwareService.Device0105.ReadDetectorValue();
-                reading1.Value *= 202183822.7 * 1.3;
+                //reading1.Value *= 202183822.7 * 1.3;
+                reading1.Value *= Coefficient0105;
                 // 将读数格式化为更友好的字符串并更新到UI属性
                 CurrentBrightnessReading1 = $"{reading1.Value:F4} (增益: {reading1.Gain})";
 
                 // 读取设备2 (1266) 的亮度值
                 var reading2 = _hardwareService.Device1266.ReadDetectorValue();
-                reading2.Value *= 27586.21*0.88;
+                //reading2.Value *= 27586.21*0.88;
+                reading2.Value *= Coefficient1266;
                 double validValue;
                 if (Math.Abs(LargeSphereCurrent) <= 0.00001)
                 {
