@@ -7,5 +7,11 @@ namespace StarlightRotationWpf
         public double VerticalZeroOffset { get; set; } = 0.0;
         public double Coefficient0105 { get; set; } = 0.0;
         public double Coefficient1266 { get; set; } = 0.0;
+        public double CoefficientLight1 { get; set; } = 0.0;
+        public double CoefficientLight2 { get; set; } = 0.0;
+        public double CoefficientLight3 { get; set; } = 0.0;
+        public double CoefficientLight4 { get; set; } = 0.0;
+        public double CoefficientLight5 { get; set; } = 0.0;
+        public double CoefficientLight6 { get; set; } = 0.0;
     }
 }

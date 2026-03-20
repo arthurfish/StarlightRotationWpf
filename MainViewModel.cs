@@ -57,6 +57,8 @@ namespace StarlightRotationWpf
             if (e.PropertyName == nameof(StarSelectionViewModel.SelectedStar) && StarSelection.SelectedStar != null)
             {
                 BrightnessControl.UpdateStarSize(StarSelection.SelectedStar.Size);
+                BrightnessControl.CurrentStarNo = StarSelection.SelectedStar.No;
+
             }
         }
 
