@@ -104,6 +104,7 @@ namespace StarlightRotationWpf
             _updateTimer.Interval = TimeSpan.FromMilliseconds(300); // 设置间隔为300毫秒
             _updateTimer.Tick += UpdateTimer_Tick; // 绑定Tick事件的处理方法
             _updateTimer.Start(); // 启动定时器
+            Trace.WriteLine("Brightness Control Initialization Done.");
         }
 
         // 4. 定时器触发时执行的方法
@@ -131,6 +132,9 @@ namespace StarlightRotationWpf
                 var reading2 = _hardwareService.Device1266.ReadDetectorValue();
                 //reading2.Value *= 27586.21*0.88;
                 reading2.Value *= Coefficient1266;
+                var settings = new SettingsService().LoadSettings();
+                (Coefficient0105, Coefficient1266) = (settings.Coefficient0105, settings.Coefficient1266);
+                Trace.WriteLine("Coefficient: " + Coefficient0105 + "," + Coefficient1266);
                 double validValue;
                 if (Math.Abs(LargeSphereCurrent) <= 0.00001)
                 {
