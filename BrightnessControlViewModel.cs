@@ -13,6 +13,14 @@ namespace StarlightRotationWpf
         private readonly DispatcherTimer _updateTimer; // 2. 添加一个定时器成员变量
         private double Coefficient0105;
         private double Coefficient1266;
+        private double CoefficientLight1;
+        private double CoefficientLight2;
+        private double CoefficientLight3;
+        private double CoefficientLight4;
+        private double CoefficientLight5;
+        private double CoefficientLight6;
+
+
 
         // Properties for UI binding
         private double _inputMagnitude = -6;
@@ -77,6 +85,16 @@ namespace StarlightRotationWpf
         }
 
         private double _currentStarSize = 0.014; // Default
+        private double _currentStarNo = 1;
+        public double CurrentStarNo
+        {
+            get => _currentStarNo;
+            set
+            {
+                _currentStarNo = value;
+                OnPropertyChanged();
+            }
+        }
 
 
         private string _currentBrightness;
@@ -89,6 +107,20 @@ namespace StarlightRotationWpf
             }
         }
 
+        private double getCoefficientForLight(int lightNumber)
+        {
+            return lightNumber switch
+            {
+                1 => CoefficientLight1,
+                2 => CoefficientLight2,
+                3 => CoefficientLight3,
+                4 => CoefficientLight4,
+                5 => CoefficientLight5,
+                6 => CoefficientLight6,
+                _ => throw new ArgumentException("Invalid light number")
+            };
+        }
+
         // 主构造函数，用于运行时
         public BrightnessControlViewModel(HardwareService hardwareService)
         {
@@ -97,7 +129,10 @@ namespace StarlightRotationWpf
 
             var settings = new SettingsService().LoadSettings();
             (Coefficient0105, Coefficient1266) = (settings.Coefficient0105, settings.Coefficient1266);
-            
+            (CoefficientLight1, CoefficientLight2, CoefficientLight3, CoefficientLight4, CoefficientLight5, CoefficientLight6) =
+                (settings.CoefficientLight1, settings.CoefficientLight2, settings.CoefficientLight3,
+                 settings.CoefficientLight4, settings.CoefficientLight5, settings.CoefficientLight6);
+
 
             // 3. 初始化并启动定时器
             _updateTimer = new DispatcherTimer();
@@ -182,8 +217,9 @@ namespace StarlightRotationWpf
 
         private void CalculateBrightness()
         {
+            double coefficient = getCoefficientForLight(_currentStarNo)
             // The formula from your original ViewModel
-            CalculatedBrightness = 0.00493888 * Math.Pow(2.512, -InputMagnitude) / (_currentStarSize * _currentStarSize) * 100;
+            CalculatedBrightness = coefficient * Math.Pow(2.512, -InputMagnitude) / (_currentStarSize * _currentStarSize) * 100;
         }
 
         // 无参构造函数，主要用于XAML设计器
