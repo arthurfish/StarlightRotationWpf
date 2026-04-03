@@ -91,6 +91,7 @@ namespace StarlightRotationWpf
             get => _currentStarNo;
             set
             {
+                Trace.WriteLine($"[CurrentStarNo] value:{value}");
                 _currentStarNo = value;
                 OnPropertyChanged();
             }
@@ -211,15 +212,15 @@ namespace StarlightRotationWpf
             if (newSize > 0)
             {
                 _currentStarSize = newSize;
-                CalculateBrightness();
             }
         }
 
-        private void CalculateBrightness()
+        public void CalculateBrightness()
         {
-            double coefficient = getCoefficientForLight(_currentStarNo);
+            double coefficient = getCoefficientForLight(CurrentStarNo);
             // The formula from your original ViewModel
-            CalculatedBrightness = coefficient * Math.Pow(2.512, -InputMagnitude) / (_currentStarSize * _currentStarSize) * 100;
+            Trace.Write($"CurrentStarNo: {CurrentStarNo} coef:{coefficient}, inputMag:{InputMagnitude}, currentStarSize:{_currentStarSize}\n");
+            CalculatedBrightness = coefficient * Math.Pow(2.512, -InputMagnitude) / (_currentStarSize * _currentStarSize);
         }
 
         // 无参构造函数，主要用于XAML设计器

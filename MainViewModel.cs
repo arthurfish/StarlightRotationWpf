@@ -1,6 +1,7 @@
 ﻿// MainViewModel.cs
 using System;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using System.Windows.Threading;
 
@@ -56,9 +57,11 @@ namespace StarlightRotationWpf
             // 当选择的星点发生变化时，更新亮度计算器所需的星点大小
             if (e.PropertyName == nameof(StarSelectionViewModel.SelectedStar) && StarSelection.SelectedStar != null)
             {
+                Trace.WriteLine($"[OnStarSelectionChanged] SelectedStar.No: {StarSelection.SelectedStar.No}");
                 BrightnessControl.UpdateStarSize(StarSelection.SelectedStar.Size);
                 BrightnessControl.CurrentStarNo = StarSelection.SelectedStar.No;
-
+                BrightnessControl.CalculateBrightness();
+                
             }
         }
 

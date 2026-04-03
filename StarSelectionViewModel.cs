@@ -23,6 +23,7 @@ namespace StarlightRotationWpf
             get => _selectedStar;
             set
             {
+                Trace.WriteLine($"[SelectedStar] value.No:{value.No}");
                 _selectedStar = value;
                 OnPropertyChanged();
                 // 当用户选择一个星点时，用它的数据填充编辑框
